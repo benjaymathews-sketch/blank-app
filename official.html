@@ -1,1 +1,119 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Official Board - Tamil Nadu Meet</title><style>body{font-family:Arial;background:#f0fdf4;padding:20px}.box{max-width:700px;margin:auto;background:#fff;padding:20px;border-radius:12px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px;text-align:left;font-size:14px}th{background:#16a34a;color:#fff}button{padding:10px 15px;background:#0b5cff;color:#fff;border:0;border-radius:8px;margin:5px}</style></head><body><div class="box"><h2 style="text-align:center">📋 Official Results Board</h2><p style="text-align:center">Tamil Nadu State Meet 2026 - LIVE</p><div style="text-align:center"><button onclick="load()">Refresh 🔄</button><button onclick="location.href='referee.html'" style="background:#ea580c">Referee Panel →</button></div><h3>Entries</h3><div id="entries">No Entries Yet</div><h3>Results</h3><div id="results">No Results Yet</div></div><script>function load(){let e=JSON.parse(localStorage.getItem('tn_entries')||'[]');let r=JSON.parse(localStorage.getItem('tn_results')||'[]');let eh='<table><tr><th>Name</th><th>District</th><th>Event</th></tr>';e.forEach(x=>{eh+='<tr><td>'+x.name+'</td><td>'+x.district+'</td><td>'+x.event+'</td></tr>'});eh+='</table>';document.getElementById('entries').innerHTML=e.length?eh:'No Entries Yet';let rh='<table><tr><th>Bib</th><th>Name</th><th>Event</th><th>Result</th></tr>';r.forEach(x=>{rh+='<tr><td>'+x.bib+'</td><td>'+x.name+'</td><td>'+x.event+'</td><td><b>'+x.result+'</b></td></tr>'});rh+='</table>';document.getElementById('results').innerHTML=r.length?rh:'No Results Yet';}load();</script></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Official Board</title>
+<style>
+body{font-family:Arial;background:#f0fdf4;padding:15px}
+.box{max-width:800px;margin:auto;background:#fff;padding:20px;border-radius:12px}
+input,select{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:8px;box-sizing:border-box}
+button{padding:10px 14px;border:0;border-radius:8px;font-weight:bold;cursor:pointer;color:#fff;margin:2px}
+.card{border:1px solid #e2e8f0;padding:14px;border-radius:10px;margin:12px 0;background:#f8fafc}
+.small{font-size:13px;color:#475569;line-height:1.7}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:bold;color:#fff}
+.timeBox{background:#e0f2fe;padding:10px;border-radius:8px;margin-top:8px}
+label{font-size:12px;font-weight:bold;color:#333}
+</style>
+</head>
+<body>
+<div class="box">
+<h2 style="text-align:center">📋 Official Board - Tamil Nadu Meet 2026</h2>
+<p style="text-align:center">17 to 19 Dec 2026 - Chennai</p>
+
+<h3>⏰ Event Schedule - Start / End Time</h3>
+<div style="background:#fef9c3;padding:12px;border-radius:10px">
+<label>Select Event</label>
+<select id="schEvent">
+<option>100m - Athletics</option><option>200m - Athletics</option><option>400m - Athletics</option><option>800m - Athletics</option><option>1500m - Athletics</option><option>Long Jump</option><option>High Jump</option><option>Shot Put</option><option>Discus Throw</option><option>Javelin Throw</option>
+<option>50m Freestyle - Swimming</option><option>100m Freestyle - Swimming</option><option>200m Freestyle - Swimming</option><option>50m Backstroke</option><option>100m Backstroke</option><option>50m Breaststroke</option><option>100m Breaststroke</option><option>50m Butterfly</option><option>100m Butterfly</option><option>200m Individual Medley</option>
+</select>
+<label>📅 Date</label><input id="schDate" type="date" value="2026-12-17">
+<label>⏰ Start Time</label><input id="schStart" type="time" value="09:00">
+<label>🏁 End Time</label><input id="schEnd" type="time" value="10:00">
+<label>👨‍⚖️ Official Name</label><input id="schOfficial" placeholder="Official Name - Ex: Mr. Kumar">
+<label>📍 Venue / Lane</label><input id="schVenue" placeholder="Ex: Main Ground / Pool Lane 1">
+<button style="background:#16a34a;width:100%" onclick="saveSchedule()">✅ Save Schedule</button>
+<p id="schMsg" style="color:green;text-align:center"></p>
+</div>
+
+<h3>📅 Saved Schedule</h3>
+<div id="scheduleList"></div>
+<hr>
+
+<h3>👥 All Players - Official View</h3>
+<button style="background:#0b5cff" onclick="load()">🔄 Refresh</button>
+<button style="background:#16a34a" onclick="location.href='index.html'">← Entry Form</button>
+<button style="background:#ea580c" onclick="location.href='referee.html'">Referee Panel →</button>
+<div id="list"></div>
+</div>
+
+<script>
+function saveSchedule(){
+  let ev = document.getElementById('schEvent').value;
+  let d = document.getElementById('schDate').value;
+  let s = document.getElementById('schStart').value;
+  let e = document.getElementById('schEnd').value;
+  let off = document.getElementById('schOfficial').value;
+  let ven = document.getElementById('schVenue').value;
+  if(!d || !s || !e){ alert('Date, Start Time, End Time Podunga'); return; }
+  let arr = JSON.parse(localStorage.getItem('tn_schedule')||'[]');
+  arr.push({event:ev,date:d,start:s,end:e,official:off,venue:ven});
+  localStorage.setItem('tn_schedule', JSON.stringify(arr));
+  document.getElementById('schMsg').innerText = 'Schedule Saved ✅ - ' + ev + ' - ' + s + ' to ' + e;
+  loadSchedule();
+}
+function loadSchedule(){
+  let arr = JSON.parse(localStorage.getItem('tn_schedule')||'[]');
+  let h = '';
+  if(arr.length==0) h='<p>No Schedule Yet</p>';
+  arr.forEach((x,i)=>{
+    h += `<div class="card"><b>${x.event}</b><br><div class="small">📅 Date: ${x.date}<br>⏰ Start: <b>${x.start}</b> | 🏁 End: <b>${x.end}</b><br>👨‍⚖️ Official: ${x.official||'-'}<br>📍 Venue: ${x.venue||'-'}</div><button style="background:#dc2626" onclick="delSch(${i})">🗑️ Delete Schedule</button></div>`;
+  });
+  document.getElementById('scheduleList').innerHTML = h;
+}
+function delSch(i){
+  if(confirm('Schedule Delete Pannava?')){
+    let arr = JSON.parse(localStorage.getItem('tn_schedule')||'[]');
+    arr.splice(i,1); localStorage.setItem('tn_schedule', JSON.stringify(arr)); loadSchedule();
+  }
+}
+function load(){
+  loadSchedule();
+  let arr = JSON.parse(localStorage.getItem('tn_entries')||'[]');
+  let h = '';
+  if(arr.length==0) h='<p>No Entries Yet</p>';
+  arr.forEach((e,i)=>{
+    let meetColor = e.meet=='Swimming' ? '#0284c7' : '#0b5cff';
+    h += `<div class="card">
+      <span class="badge" style="background:${meetColor}">${e.meet||' - '}</span> <b>${i+1}. ${e.name||''}</b>
+      <div class="small">
+      📞 Phone: ${e.phone||'-'} | 📍 District: ${e.district||'-'}<br>
+      📅 DOB: ${e.dob||'-'} | 🎂 Age: ${e.age||'-'} | 👤 Gender: ${e.gender||'-'}<br>
+      🏃 Events: ${e.event||'-'}<br>🕒 Submitted: ${e.time||'-'}
+      </div>
+      <div class="timeBox">
+        <label>⏰ Start Time For This Player</label><input id="st${i}" type="time" value="${e.startTime||'09:00'}">
+        <label>🏁 End Time</label><input id="en${i}" type="time" value="${e.endTime||'10:00'}">
+        <label>👨‍⚖️ Assigned Official</label><input id="off${i}" placeholder="Official Name" value="${e.official||''}">
+        <label>Status</label><select id="stat${i}"><option ${e.status=='Waiting'?'selected':''}>Waiting</option><option ${e.status=='Started'?'selected':''}>Started</option><option ${e.status=='Finished'?'selected':''}>Finished</option><option ${e.status=='Disqualified'?'selected':''}>Disqualified</option></select>
+        <button style="background:#16a34a" onclick="savePlayerTime(${i})">✅ Save Start / End Time</button>
+      </div>
+    </div>`;
+  });
+  document.getElementById('list').innerHTML = h;
+}
+function savePlayerTime(i){
+  let arr = JSON.parse(localStorage.getItem('tn_entries')||'[]');
+  arr[i].startTime = document.getElementById('st'+i).value;
+  arr[i].endTime = document.getElementById('en'+i).value;
+  arr[i].official = document.getElementById('off'+i).value;
+  arr[i].status = document.getElementById('stat'+i).value;
+  localStorage.setItem('tn_entries', JSON.stringify(arr));
+  alert('Saved ✅ - ' + arr[i].name + ' - ' + arr[i].startTime + ' to ' + arr[i].endTime);
+  load();
+}
+load();
+</script>
+</body>
+</html>
