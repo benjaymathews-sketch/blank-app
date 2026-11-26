@@ -21,10 +21,10 @@ label{font-size:12px;font-weight:bold}
 </head>
 <body>
 
-<!-- PUBLIC ENTRY - NO LOGIN -->
+<!-- PUBLIC ENTRY - NO LOGIN - LOGIN BUTTON ILLA -->
 <div class="box hidden" id="publicBox">
 <h2 style="text-align:center">🏆 Tamil Nadu State Meet 2026</h2>
-<p style="text-align:center">17 to 19 Dec 2026 - Chennai<br><b>📝 Public Entry Form - Yaarum Fill Panna Mudiyum</b></p>
+<p style="text-align:center">17 to 19 Dec 2026 - Chennai<br><b>📝 Public Entry Form</b></p>
 <label>Meet - Dropdown *</label><select id="pMeet" onchange="fillPublicEvents()"></select>
 <label>Player Name *</label><input id="pName" placeholder="Player Full Name">
 <label>Phone *</label><input id="pPhone" placeholder="Phone Number">
@@ -37,11 +37,10 @@ label{font-size:12px;font-weight:bold}
 <button style="background:#16a34a" onclick="addPublicEvent()">+ Add Event</button><p id="pSelected">Selected: None (0/5)</p>
 <button style="background:#0b5cff;width:100%;font-size:16px;padding:14px" onclick="savePublicEntry()">✅ Submit My Entry</button>
 <p id="pMsg" style="color:green;text-align:center;font-weight:bold"></p>
-<p style="text-align:center;font-size:12px;color:#64748b">Entry Submit Panna Appuram Admin-kku Theriyum - Admin Dhan Confirm Pannuvar</p>
-<button style="background:#64748b;width:100%" onclick="showLogin()">🔐 Staff / Admin Login</button>
+<p style="text-align:center;font-size:12px;color:#64748b">Entry Submit Panna Appuram Admin-kku Theriyum</p>
 </div>
 
-<!-- LOGIN -->
+<!-- LOGIN - ADMIN / STAFF MATTUM -->
 <div class="box" id="loginBox">
 <h2 style="text-align:center">🏆 Tamil Nadu State Meet 2026</h2><p style="text-align:center">17 to 19 Dec 2026 - Chennai</p>
 <h3 style="text-align:center">🔐 Staff Login</h3>
@@ -50,8 +49,6 @@ label{font-size:12px;font-weight:bold}
 <button style="background:#0b5cff;width:100%" onclick="doLogin()">Login</button>
 <p style="text-align:center;font-size:12px;color:#64748b">Admin: <b>admin / admin123</b></p>
 <p id="loginErr" style="color:red;text-align:center"></p>
-<hr><p style="text-align:center"><b>Player-a? Entry Podanuma?</b></p>
-<button style="background:#16a34a;width:100%" onclick="showPublic()">📝 Public Entry Form - Login Venda - Click Here</button>
 </div>
 
 <!-- MAIN -->
@@ -66,21 +63,18 @@ label{font-size:12px;font-weight:bold}
 <input id="publicLinkBox" readonly value="https://benjaymathews-sketch.github.io/blank-app/?public=1" onclick="this.select()" style="background:#fff">
 <button style="background:#16a34a;width:100%" onclick="copyPublicLink()">📋 Copy Public Link</button>
 <button style="background:#25D366;width:100%" onclick="shareWhatsApp()">💬 Share on WhatsApp</button>
-<p style="font-size:12px">Idha WhatsApp Group / School Group la Anuppinga - Ellarum Entry Poda Mudiyum - Login Venda!</p>
+<p style="font-size:12px">Public Link la Login Button-e Irukkadhu - Entry Mattum Dhan Panna Mudiyum!</p>
 </div>
-
 <h3>1. Meet Control</h3>
 <label>Enabled Meet</label><select id="adminMeetCtrl"><option value="Both">Both</option><option value="Athletics">Athletics Mattum</option><option value="Swimming">Swimming Mattum</option></select>
 <label>Common Start Time</label><input id="commonStart" type="time" value="09:00">
 <label>Lanes</label><select id="laneCount"><option value="6">6 Lanes</option><option value="8" selected>8 Lanes</option></select>
 <button style="background:#0b5cff" onclick="saveAdminSettings()">✅ Save Settings</button><p id="adminSetMsg" style="color:green"></p>
-
 <h3>2. Create User - Password Kaata Maattom</h3>
 <input id="newUid" placeholder="New User ID - Ex: entry1, startref1"><input id="newUpass" placeholder="New Password">
 <select id="newRole"><option value="entry">Entry Staff</option><option value="official">Official</option><option value="startref">Starting Referee</option><option value="finishref">Finishing Referee</option><option value="admin">Admin</option></select>
 <select id="newMeet"><option>Athletics</option><option>Swimming</option><option>Both</option></select>
 <button style="background:#16a34a;width:100%" onclick="createUser()">✅ Create User</button><div id="userList"></div>
-
 <h3>➕➖ 2A. Events Add / Delete - Admin Mattum</h3>
 <div style="background:#e0f2fe;padding:14px;border-radius:10px">
 <label>Meet</label><select id="newEventMeet"><option>Athletics</option><option>Swimming</option></select>
@@ -90,7 +84,6 @@ label{font-size:12px;font-weight:bold}
 <h4>Swimming Events</h4><div id="swmEventList"></div>
 <button style="background:#64748b;width:100%" onclick="resetEvents()">🔄 Default Events-kku Pogavum</button>
 </div>
-
 <h3>🧪 3. ADMIN TEST - Start / Stop Timing</h3>
 <div style="background:#fee2e2;padding:14px;border-radius:10px">
 <select id="adminTestEvent"><option>100m Freestyle</option><option>50m Freestyle</option><option>100m</option><option>200m</option></select>
@@ -101,7 +94,6 @@ label{font-size:12px;font-weight:bold}
 <button style="background:#16a34a;width:100%" onclick="adminDemoRace()">🎬 DEMO RACE - Auto Test</button>
 <button style="background:#64748b;width:100%" onclick="adminTestReset()">🔄 RESET Test</button><div id="adminTestResult"></div>
 </div>
-
 <h3>🎓 4. Certificate Template - Header / Footer / Logo</h3>
 <div style="background:#fef9c3;padding:14px;border-radius:10px">
 <label>📷 Logo Upload</label><input type="file" accept="image/*" onchange="uploadLogo(event)"><div id="logoPreview"></div>
@@ -119,10 +111,9 @@ label{font-size:12px;font-weight:bold}
 <button style="background:#b45309;width:100%" onclick="saveCertTemplate()">✅ Save Certificate Template</button>
 <button style="background:#64748b;width:100%" onclick="previewCert()">👁️ Preview Certificate</button><p id="certSaveMsg" style="color:green;text-align:center"></p>
 </div>
-
 <h3>5. Order of Events - Excel / PDF</h3>
 <input type="file" accept=".xlsx,.xls,.csv" onchange="uploadOrderExcel(event)"><input type="file" accept=".pdf" onchange="uploadOrderPdf(event)"><div id="orderList"></div>
-<h3>6. All Entries - Public + Staff - Edit / Delete</h3><button style="background:#0b5cff" onclick="renderAll()">🔄 Refresh</button><div id="adminEntries"></div>
+<h3>6. All Entries - Public + Staff</h3><button style="background:#0b5cff" onclick="renderAll()">🔄 Refresh</button><div id="adminEntries"></div>
 </div>
 
 <!-- ENTRY STAFF -->
@@ -184,16 +175,12 @@ function certTpl(){return get('tn_cert',{h1:'TAMIL NADU STATE MEET 2026',h2:'Tam
 function getEvents(){let s=JSON.parse(localStorage.getItem('tn_events')||'null');if(s)return s;return{Athletics:["100m","200m","400m","800m","1500m","Long Jump","High Jump","Shot Put","Discus Throw","Javelin Throw"],Swimming:["50m Freestyle","100m Freestyle","200m Freestyle","50m Backstroke","100m Backstroke","50m Breaststroke","100m Breaststroke","50m Butterfly","100m Butterfly","200m Individual Medley"]};}
 function show(id,yes){document.getElementById(id).classList.toggle('hidden',!yes);}
 function fmt(ms){if(ms<0)ms=0;let m=Math.floor(ms/60000);let s=Math.floor((ms%60000)/1000);let cs=Math.floor((ms%1000)/10);return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+'.'+String(cs).padStart(2,'0');}
-// PUBLIC
-function showPublic(){document.getElementById('loginBox').classList.add('hidden');document.getElementById('mainBox').classList.add('hidden');document.getElementById('publicBox').classList.remove('hidden');initPublic();}
-function showLogin(){document.getElementById('publicBox').classList.add('hidden');document.getElementById('loginBox').classList.remove('hidden');}
 function copyPublicLink(){let el=document.getElementById('publicLinkBox');el.select();document.execCommand('copy');alert('Link Copied ✅\nIppo WhatsApp la Paste Pannunga');}
 function shareWhatsApp(){let link='https://benjaymathews-sketch.github.io/blank-app/?public=1';let msg=encodeURIComponent('🏆 Tamil Nadu State Meet 2026 - 17 to 19 Dec - Chennai\n\n📝 Entry Podanuma? Link-a Click Pannunga - Login Venda!\n\n'+link+'\n\nName, District, DOB, Event Fill Panni Submit Pannunga!');window.open('https://wa.me/?text='+msg,'_blank');}
 function initPublic(){let s=settings();let pm=document.getElementById('pMeet');pm.innerHTML='';let allowed=s.meetCtrl=='Both'?['Athletics','Swimming']:[s.meetCtrl];allowed.forEach(m=>{let o=document.createElement('option');o.text=m;pm.add(o);});fillPublicEvents();}
 function fillPublicEvents(){let m=document.getElementById('pMeet').value;let arr=getEvents()[m]||[];let sel=document.getElementById('pEventSel');sel.innerHTML='';arr.forEach(e=>{let o=document.createElement('option');o.text=e;sel.add(o);});}
 function addPublicEvent(){let v=document.getElementById('pEventSel').value;if(pubEvents.includes(v))return;if(pubEvents.length>=5){alert('Max 5');return;}pubEvents.push(v);document.getElementById('pSelected').innerText='Selected: '+pubEvents.join(', ')+' ('+pubEvents.length+'/5)';}
 function savePublicEntry(){let name=document.getElementById('pName').value.trim(),phone=document.getElementById('pPhone').value.trim(),dob=document.getElementById('pDob').value;if(!name||!phone||!dob){alert('Name + Phone + DOB Podunga');return;}if(!pubEvents.length){alert('Oru Event Add Pannunga');return;}let arr=get('tn_entries',[]);arr.push({meet:document.getElementById('pMeet').value,name:name,phone:phone,district:document.getElementById('pDistrict').value,dob:dob,age:document.getElementById('pAge').value,gender:document.getElementById('pGender').value,school:document.getElementById('pSchool').value,event:pubEvents.join(', '),startTime:settings().commonStart,finishTime:'',source:'PUBLIC',time:new Date().toLocaleString()});set('tn_entries',arr);pubEvents=[];document.getElementById('pSelected').innerText='Selected: None (0/5)';document.getElementById('pMsg').innerText='✅ Entry Submitted Successfully! - '+name+' - Admin Confirm Pannuvar';document.getElementById('pName').value='';document.getElementById('pPhone').value='';}
-// LOGIN
 function doLogin(){let id=document.getElementById('loginId').value.trim();let pw=document.getElementById('loginPass').value;let u=users().find(x=>x.uid==id&&x.pass==pw);if(!u){document.getElementById('loginErr').innerText='Wrong ID / Password';return;}cur=u;set('tn_cur',u);document.getElementById('loginBox').classList.add('hidden');document.getElementById('publicBox').classList.add('hidden');document.getElementById('mainBox').classList.remove('hidden');document.getElementById('who').innerText=u.uid;document.getElementById('whoRole').innerText=u.role+' - '+u.meet;show('adminPanel',u.role=='admin');show('entryPanel',u.role=='entry');show('officialPanel',u.role=='official');show('startPanel',u.role=='startref');show('finishPanel',u.role=='finishref');show('certPanel',true);if(u.role=='admin'){show('entryPanel',true);show('officialPanel',true);show('startPanel',true);show('finishPanel',true);}initPanels();startPolling();}
 function logout(){localStorage.removeItem('tn_cur');location.reload();}
 function initPanels(){let s=settings();let ct=certTpl();document.getElementById('offCommonStart').innerText=s.commonStart;document.getElementById('offLanes').innerText=s.lanes;document.getElementById('adminMeetCtrl').value=s.meetCtrl;document.getElementById('commonStart').value=s.commonStart;document.getElementById('laneCount').value=s.lanes;document.getElementById('certH1').value=ct.h1;document.getElementById('certH2').value=ct.h2;document.getElementById('certH3').value=ct.h3;document.getElementById('certTitle').value=ct.title;document.getElementById('certSub').value=ct.sub;document.getElementById('certF1').value=ct.f1;document.getElementById('certF2').value=ct.f2;document.getElementById('certS1').value=ct.s1;document.getElementById('certS2').value=ct.s2;document.getElementById('certS3').value=ct.s3;document.getElementById('certBg').value=ct.bg;document.getElementById('logoPreview').innerHTML=ct.logo?'<img src="'+ct.logo+'" style="width:90px">':'<p>No Logo Yet</p>';let em=document.getElementById('eMeet');em.innerHTML='';let allowed=[];if(cur.meet=='Both'||cur.role=='admin'){allowed=s.meetCtrl=='Both'?['Athletics','Swimming']:[s.meetCtrl];}else{allowed=(s.meetCtrl=='Both'||s.meetCtrl==cur.meet)?[cur.meet]:[s.meetCtrl];}allowed.forEach(m=>{let o=document.createElement('option');o.text=m;em.add(o);});document.getElementById('entryMeetInfo').innerText=allowed.join(', ');fillEvents();renderAll();renderOrder();renderOfficial();renderStartFinish();renderLiveEventList();renderEventLists();}
@@ -230,8 +217,7 @@ function adminTestReset(){localStorage.removeItem('tn_live_race');document.getEl
 function uploadEntryExcel(e){let f=e.target.files[0];if(!f)return;let rd=new FileReader();rd.onload=function(ev){let wb=XLSX.read(ev.target.result,{type:'binary'});let ws=wb.Sheets[wb.SheetNames[0]];let rows=XLSX.utils.sheet_to_json(ws,{header:1});let arr=get('tn_entries',[]);rows.slice(1).forEach(r=>{if(r[0])arr.push({meet:document.getElementById('eMeet').value,name:r[0],phone:r[1]||'',district:r[2]||'',dob:r[3]||'',age:r[4]||'Open',gender:r[5]||'Male',event:r[6]||'',startTime:settings().commonStart,finishTime:''});});set('tn_entries',arr);alert('Excel ✅');renderAll();};rd.readAsBinaryString(f);}
 function uploadOrderExcel(e){let f=e.target.files[0];if(!f)return;let rd=new FileReader();rd.onload=function(ev){let wb=XLSX.read(ev.target.result,{type:'binary'});let ws=wb.Sheets[wb.SheetNames[0]];let rows=XLSX.utils.sheet_to_json(ws,{header:1});let ord=rows.slice(1).map(r=>({event:r[0]||'',name:r[1]||'',lane:r[2]||'',time:r[3]||''}));set('tn_order',ord);alert('Order ✅');renderOrder();};rd.readAsBinaryString(f);}
 function uploadOrderPdf(e){let f=e.target.files[0];if(!f)return;let ord=get('tn_order',[]);ord.push({event:'PDF - '+f.name,name:'PDF Open Pannunga',lane:''});set('tn_order',ord);alert('PDF ✅');renderOrder();}
-// AUTO CHECK - ?public=1 na Public Entry Kaatum
-if(window.location.search.includes('public=1')||window.location.search.includes('public')){document.getElementById('loginBox').classList.add('hidden');document.getElementById('publicBox').classList.remove('hidden');initPublic();}
+if(window.location.search.includes('public')){document.getElementById('loginBox').classList.add('hidden');document.getElementById('publicBox').classList.remove('hidden');initPublic();}
 </script>
 </body>
 </html>
