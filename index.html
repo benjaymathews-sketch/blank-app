@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TN State Meet 2026 - Full App</title>
+<title>TN State Meet 2026 - Full App + Bulk</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 body{font-family:Arial;background:#eef2ff;padding:15px;margin:0}
@@ -23,23 +23,16 @@ label{font-size:12px;font-weight:bold}
 </head>
 <body>
 
-<!-- PUBLIC ENTRIES CHECK - TOTAL + FILTER -->
+<!-- PUBLIC ENTRIES CHECK -->
 <div class="box hidden" id="entriesBox">
 <h2 style="text-align:center">🏆 Tamil Nadu State Meet 2026</h2>
 <p style="text-align:center">17 to 19 Dec 2026 - Chennai<br><b>📋 Total Entries - Public Check</b></p>
 <div class="totalBox">TOTAL ENTRIES<br><b id="totalCount">0</b><br><span id="totalSub" style="font-size:13px"></span></div>
 <div style="background:#f1f5f9;padding:14px;border-radius:10px;margin-top:12px">
 <label>🔍 Search - Name / District / School</label><input id="fSearch" placeholder="Ex: Priya, Chennai" oninput="renderPublicEntries()">
-<div style="display:flex;gap:5px">
-<div style="flex:1"><label>Meet</label><select id="fMeet" onchange="renderPublicEntries()"><option value="">All Meet</option><option>Athletics</option><option>Swimming</option></select></div>
-<div style="flex:1"><label>Age Group</label><select id="fAge" onchange="renderPublicEntries()"><option value="">All Age Group</option><option>Under 14</option><option>Under 16</option><option>Under 18</option><option>Under 20</option><option>Open</option></select></div>
-</div>
-<div style="display:flex;gap:5px">
-<div style="flex:1"><label>Gender</label><select id="fGender" onchange="renderPublicEntries()"><option value="">All Gender</option><option>Male</option><option>Female</option></select></div>
-<div style="flex:1"><label>Event</label><select id="fEvent" onchange="renderPublicEntries()"><option value="">All Events</option></select></div>
-</div>
-<button style="background:#64748b;width:100%" onclick="clearFilters()">🔄 Clear All Filters</button>
-<p id="filterMsg" style="text-align:center;font-weight:bold;color:#0b5cff"></p>
+<div style="display:flex;gap:5px"><div style="flex:1"><label>Meet</label><select id="fMeet" onchange="renderPublicEntries()"><option value="">All Meet</option><option>Athletics</option><option>Swimming</option></select></div><div style="flex:1"><label>Age Group</label><select id="fAge" onchange="renderPublicEntries()"><option value="">All Age Group</option><option>Under 14</option><option>Under 16</option><option>Under 18</option><option>Under 20</option><option>Open</option></select></div></div>
+<div style="display:flex;gap:5px"><div style="flex:1"><label>Gender</label><select id="fGender" onchange="renderPublicEntries()"><option value="">All Gender</option><option>Male</option><option>Female</option></select></div><div style="flex:1"><label>Event</label><select id="fEvent" onchange="renderPublicEntries()"><option value="">All Events</option></select></div></div>
+<button style="background:#64748b;width:100%" onclick="clearFilters()">🔄 Clear All Filters</button><p id="filterMsg" style="text-align:center;font-weight:bold;color:#0b5cff"></p>
 </div>
 <div id="entriesList"></div>
 <button style="background:#0b5cff;width:100%" onclick="location.href=location.origin+location.pathname+'?public=1'">📝 New Entry Poda Click Pannunga</button>
@@ -50,6 +43,14 @@ label{font-size:12px;font-weight:bold}
 <h2 style="text-align:center">🏆 Tamil Nadu State Meet 2026</h2>
 <p style="text-align:center">17 to 19 Dec 2026 - Chennai<br><b>📝 Public Entry Form</b></p>
 <button style="background:#7c3aed;width:100%" onclick="showEntriesPage()">📋 Total Entries Paakavum - Age / Gender / Event Filter</button>
+<hr>
+<h3>📥📤 Bulk Entry - School / Club-kku - 100 Peru Oru Vaati la!</h3>
+<div style="background:#ede9fe;padding:14px;border-radius:10px">
+<button style="background:#7c3aed;width:100%" onclick="downloadBulkTemplate()">📥 Bulk Entry Template Download Pannunga - Excel Format</button>
+<p style="font-size:12px;text-align:center">Template Download Panni Fill Panni - Keela Upload Pannunga!</p>
+<label>📤 Bulk Entry Upload - Template Fill Panni Upload Pannunga</label><input type="file" accept=".xlsx,.xls,.csv" onchange="uploadBulkEntryPublic(event)">
+</div>
+<hr>
 <label>Meet - Dropdown *</label><select id="pMeet" onchange="fillPublicEvents()"></select>
 <label>Player Name *</label><input id="pName" placeholder="Player Full Name">
 <label>Phone *</label><input id="pPhone" placeholder="Phone Number">
@@ -82,18 +83,14 @@ label{font-size:12px;font-weight:bold}
 <div id="adminPanel" class="hidden">
 <h2>🛡️ Admin Panel</h2>
 <div style="background:#dcfce7;padding:12px;border-radius:10px">
-<b>🔗 PUBLIC LINKS - Share Pannunga:</b><br>
+<b>🔗 PUBLIC LINKS:</b><br>
 <label>Entry Link</label><input readonly value="https://benjaymathews-sketch.github.io/blank-app/?public=1" onclick="this.select()" style="background:#fff">
-<label>Entries Check Link - Total + Filter</label><input readonly value="https://benjaymathews-sketch.github.io/blank-app/?entries=1" onclick="this.select()" style="background:#fff">
+<label>Entries Check Link</label><input readonly value="https://benjaymathews-sketch.github.io/blank-app/?entries=1" onclick="this.select()" style="background:#fff">
 <button style="background:#16a34a;width:100%" onclick="copyPublicLink()">📋 Copy Entry Link</button>
 <button style="background:#7c3aed;width:100%" onclick="copyEntriesLink()">📋 Copy Entries Check Link</button>
 <button style="background:#25D366;width:100%" onclick="shareWhatsApp()">💬 Share on WhatsApp</button>
 </div>
-<div style="background:#e0e7ff;padding:12px;border-radius:10px;margin-top:10px">
-<b>📊 TOTAL ENTRIES - LIVE:</b> <b id="adminTotal" style="font-size:22px;color:#0b5cff">0</b><br>
-<span id="adminTotalBreak"></span><br>
-<button style="background:#7c3aed;width:100%" onclick="showEntriesPageAdmin()">📋 Entries Filter View Paakavum</button>
-</div>
+<div style="background:#e0e7ff;padding:12px;border-radius:10px;margin-top:10px"><b>📊 TOTAL ENTRIES:</b> <b id="adminTotal" style="font-size:22px;color:#0b5cff">0</b><br><span id="adminTotalBreak"></span><br><button style="background:#7c3aed;width:100%" onclick="showEntriesPageAdmin()">📋 Entries Filter View</button></div>
 <h3>📅 1A. Age Group - Cut-off + Custom Range</h3>
 <div style="background:#fef3c7;padding:14px;border-radius:10px">
 <label>✂️ Cut-off Date</label><input id="adminCutoff" type="date" value="2026-12-31">
@@ -162,7 +159,11 @@ label{font-size:12px;font-weight:bold}
 </div>
 <div id="entryPanel" class="hidden">
 <h2>📝 Entry Form - Staff</h2><p>Allotted Meet: <b id="entryMeetInfo"></b></p>
-<input type="file" accept=".xlsx,.xls,.csv" onchange="uploadEntryExcel(event)">
+<div style="background:#ede9fe;padding:12px;border-radius:10px">
+<button style="background:#7c3aed;width:100%" onclick="downloadBulkTemplate()">📥 Bulk Entry Template Download - Excel Format</button>
+<p style="font-size:12px;text-align:center">Template Download Panni Fill Panni - Keela Upload Pannunga</p>
+<label>📤 Bulk Entry Upload - Template Fill Panni Upload Pannunga</label><input type="file" accept=".xlsx,.xls,.csv" onchange="uploadBulkEntry(event)">
+</div>
 <label>Meet - Dropdown *</label><select id="eMeet" onchange="fillEvents()"></select>
 <input id="eName" placeholder="Player Name *"><input id="ePhone" placeholder="Phone"><input id="eDistrict" placeholder="District"><label>DOB *</label><input id="eDob" type="date" onchange="onDobChangeStaff()">
 <label>Age Group - Auto</label><select id="eAge" disabled style="background:#f1f5f9"><option>Under 14</option><option>Under 16</option><option>Under 18</option><option>Under 20</option><option>Open</option></select>
@@ -210,14 +211,17 @@ function certTpl(){return get('tn_cert',{h1:'TAMIL NADU STATE MEET 2026',h2:'Tam
 function getEvents(){let s=JSON.parse(localStorage.getItem('tn_events')||'null');if(s)return s;return{Athletics:["100m","200m","400m","800m","1500m","Long Jump","High Jump","Shot Put","Discus Throw","Javelin Throw"],Swimming:["50m Freestyle","100m Freestyle","200m Freestyle","50m Backstroke","100m Backstroke","50m Breaststroke","100m Breaststroke","50m Butterfly","100m Butterfly","200m Individual Medley"]};}
 function show(id,yes){document.getElementById(id).classList.toggle('hidden',!yes);}
 function fmt(ms){if(ms<0)ms=0;let m=Math.floor(ms/60000);let s=Math.floor((ms%60000)/1000);let cs=Math.floor((ms%1000)/10);return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+'.'+String(cs).padStart(2,'0');}
-// AGE AUTO
 function ageSettings(){let s=JSON.parse(localStorage.getItem('tn_age_settings')||'null');if(s)return s;return{cutoff:'2026-12-31',ranges:{'Under 14':{from:'2013-01-01',to:'2014-12-31'},'Under 16':{from:'2011-01-01',to:'2012-12-31'},'Under 18':{from:'2009-01-01',to:'2010-12-31'},'Under 20':{from:'2007-01-01',to:'2008-12-31'},'Open':{from:'1900-01-01',to:'2006-12-31'}} };}
 function saveAgeSettings(){let obj={cutoff:document.getElementById('adminCutoff').value,ranges:{'Under 14':{from:document.getElementById('u14From').value,to:document.getElementById('u14To').value},'Under 16':{from:document.getElementById('u16From').value,to:document.getElementById('u16To').value},'Under 18':{from:document.getElementById('u18From').value,to:document.getElementById('u18To').value},'Under 20':{from:document.getElementById('u20From').value,to:document.getElementById('u20To').value},'Open':{from:document.getElementById('openFrom').value,to:document.getElementById('openTo').value}}};localStorage.setItem('tn_age_settings',JSON.stringify(obj));document.getElementById('ageSetMsg').innerText='✅ Saved!';alert('✅ Saved! Cut-off: '+obj.cutoff);}
 function loadAgeSettings(){let s=ageSettings();if(document.getElementById('adminCutoff'))document.getElementById('adminCutoff').value=s.cutoff;if(document.getElementById('u14From'))document.getElementById('u14From').value=s.ranges['Under 14'].from;if(document.getElementById('u14To'))document.getElementById('u14To').value=s.ranges['Under 14'].to;if(document.getElementById('u16From'))document.getElementById('u16From').value=s.ranges['Under 16'].from;if(document.getElementById('u16To'))document.getElementById('u16To').value=s.ranges['Under 16'].to;if(document.getElementById('u18From'))document.getElementById('u18From').value=s.ranges['Under 18'].from;if(document.getElementById('u18To'))document.getElementById('u18To').value=s.ranges['Under 18'].to;if(document.getElementById('u20From'))document.getElementById('u20From').value=s.ranges['Under 20'].from;if(document.getElementById('u20To'))document.getElementById('u20To').value=s.ranges['Under 20'].to;if(document.getElementById('openFrom'))document.getElementById('openFrom').value=s.ranges['Open'].from;if(document.getElementById('openTo'))document.getElementById('openTo').value=s.ranges['Open'].to;}
 function calcAgeGroup(dobStr){if(!dobStr)return '';let s=ageSettings();for(let g of ['Under 14','Under 16','Under 18','Under 20','Open']){let r=s.ranges[g];if(dobStr>=r.from&&dobStr<=r.to)return g;}let dob=new Date(dobStr);let cut=new Date(s.cutoff);let age=cut.getFullYear()-dob.getFullYear();let m=cut.getMonth()-dob.getMonth();if(m<0||(m==0&&cut.getDate()<dob.getDate()))age--;if(age<=14)return 'Under 14';if(age<=16)return 'Under 16';if(age<=18)return 'Under 18';if(age<=20)return 'Under 20';return 'Open';}
 function onDobChangePublic(){let dob=document.getElementById('pDob').value;let g=calcAgeGroup(dob);if(g){document.getElementById('pAge').value=g;document.getElementById('pMsg').innerText='✅ DOB: '+dob+' -> Age Group Auto: '+g;}}
 function onDobChangeStaff(){let dob=document.getElementById('eDob').value;let g=calcAgeGroup(dob);if(g){document.getElementById('eAge').value=g;document.getElementById('eMsg').innerText='✅ DOB: '+dob+' -> Age Group Auto: '+g;}}
-// PUBLIC ENTRIES - TOTAL + FILTER
+// BULK TEMPLATE
+function downloadBulkTemplate(){let data=[['Name','Phone','District','DOB (YYYY-MM-DD)','Age Group (Auto - Kaali Vittalum Podhum)','Gender (Male/Female)','Events (Comma la - Ex: 100m, 200m)','School / Club','Meet (Athletics/Swimming)'],['Priya Sharma','9876543210','Chennai','2013-06-15','','Female','100m Freestyle, 50m Freestyle','DAV School','Swimming'],['Arjun Kumar','9876543211','Madurai','2011-03-10','','Male','100m, 200m','St Joseph School','Athletics'],['Divya R','9876543212','Coimbatore','2010-08-20','','Female','100m','KV School','Athletics']];let ws=XLSX.utils.aoa_to_sheet(data);ws['!cols']=[{wch:20},{wch:14},{wch:14},{wch:16},{wch:22},{wch:14},{wch:35},{wch:18},{wch:14}];let wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Bulk Entry');let ins=[['BULK ENTRY - EPPADI FILL PANNANUM?'],['1. Name, Phone, District, DOB Mattum Compulsory'],['2. DOB - YYYY-MM-DD Format la Podunga - Ex: 2013-06-15'],['3. Age Group - Kaali Vittalum Podhum - DOB vachu Auto Calculate Aagum!'],['4. Gender - Male / Female nu Mattum Podunga'],['5. Events - Comma Pottu Podunga - Ex: 100m, 200m'],['6. Meet - Athletics / Swimming'],['7. Fill Panni Save Panni - Idhe File-a Upload Pannunga'],['8. Max 5 Events Per Player'],[''],['Athletics: 100m, 200m, 400m, 800m, 1500m, Long Jump, High Jump, Shot Put, Discus Throw, Javelin Throw'],['Swimming: 50m Freestyle, 100m Freestyle, 200m Freestyle, 50m Backstroke, 100m Backstroke, 50m Breaststroke, 100m Breaststroke, 50m Butterfly, 100m Butterfly, 200m Individual Medley']];let ws2=XLSX.utils.aoa_to_sheet(ins);ws2['!cols']=[{wch:110}];XLSX.utils.book_append_sheet(wb,ws2,'Instructions');XLSX.writeFile(wb,'TN_Meet_2026_Bulk_Entry_Template.xlsx');alert('📥 Template Download Aaiduchu! 3 Sample Players Irukkanga - Delete Panni Unga Players-a Add Pannunga!');}
+function processBulkRows(rows,source,defaultMeet){let arr=get('tn_entries',[]);let added=0;rows.slice(1).forEach((r)=>{if(!r[0])return;let dob='';if(r[3]){if(typeof r[3]==='number'){let d=new Date((r[3]-25569)*86400*1000);dob=d.toISOString().slice(0,10);}else{dob=String(r[3]).trim();}}let age=(r[4]||'').toString().trim();if(!age&&dob)age=calcAgeGroup(dob);if(!age)age='Open';let meet=(r[8]||defaultMeet||'Athletics').toString().trim();if(meet.toLowerCase().includes('swim'))meet='Swimming';else if(meet.toLowerCase().includes('ath'))meet='Athletics';arr.push({meet:meet,name:String(r[0]).trim(),phone:String(r[1]||''),district:String(r[2]||''),dob:dob,age:age,gender:(r[5]||'Male').toString().trim(),event:String(r[6]||''),school:String(r[7]||''),startTime:settings().commonStart,finishTime:'',source:source,time:new Date().toLocaleString()});added++;});set('tn_entries',arr);return added;}
+function uploadBulkEntry(e){let f=e.target.files[0];if(!f)return;let rd=new FileReader();rd.onload=function(ev){let wb=XLSX.read(ev.target.result,{type:'binary'});let ws=wb.Sheets[wb.SheetNames[0]];let rows=XLSX.utils.sheet_to_json(ws,{header:1});let meet=document.getElementById('eMeet')?document.getElementById('eMeet').value:'Athletics';let n=processBulkRows(rows,'STAFF-BULK',meet);alert('✅ Bulk Upload Success! '+n+' Entries Added! Total: '+get('tn_entries',[]).length);renderAll();fillFilterEvents();};rd.readAsBinaryString(f);}
+function uploadBulkEntryPublic(e){let f=e.target.files[0];if(!f)return;let rd=new FileReader();rd.onload=function(ev){let wb=XLSX.read(ev.target.result,{type:'binary'});let ws=wb.Sheets[wb.SheetNames[0]];let rows=XLSX.utils.sheet_to_json(ws,{header:1});let meet=document.getElementById('pMeet')?document.getElementById('pMeet').value:'Athletics';let n=processBulkRows(rows,'PUBLIC-BULK',meet);document.getElementById('pMsg').innerText='✅ Bulk Upload Success! '+n+' Entries Added!';alert('✅ Bulk Upload Success! '+n+' Entries Added!');};rd.readAsBinaryString(f);}
 function showEntriesPage(){document.getElementById('loginBox').classList.add('hidden');document.getElementById('publicBox').classList.add('hidden');document.getElementById('mainBox').classList.add('hidden');document.getElementById('entriesBox').classList.remove('hidden');fillFilterEvents();renderPublicEntries();window.scrollTo(0,0);}
 function showEntriesPageAdmin(){showEntriesPage();}
 function copyPublicLink(){let t=document.createElement('textarea');t.value='https://benjaymathews-sketch.github.io/blank-app/?public=1';document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();alert('Entry Link Copied ✅');}
@@ -225,7 +229,7 @@ function copyEntriesLink(){let t=document.createElement('textarea');t.value='htt
 function shareWhatsApp(){let link='https://benjaymathews-sketch.github.io/blank-app/?public=1\nEntries Check: https://benjaymathews-sketch.github.io/blank-app/?entries=1';let msg=encodeURIComponent('🏆 Tamil Nadu State Meet 2026 - 17 to 19 Dec - Chennai\n\n📝 Entry Podanumna: '+link);window.open('https://wa.me/?text='+msg,'_blank');}
 function fillFilterEvents(){let ge=getEvents();let all=[...ge.Athletics,...ge.Swimming];let sel=document.getElementById('fEvent');let curV=sel.value;sel.innerHTML='<option value="">All Events</option>';all.forEach(e=>{let o=document.createElement('option');o.text=e;o.value=e;sel.add(o);});sel.value=curV;let asel=document.getElementById('aFevent');if(asel){let cv=asel.value;asel.innerHTML='<option value="">All Events</option>';all.forEach(e=>{let o=document.createElement('option');o.text=e;o.value=e;asel.add(o);});asel.value=cv;}}
 function clearFilters(){document.getElementById('fSearch').value='';document.getElementById('fMeet').value='';document.getElementById('fAge').value='';document.getElementById('fGender').value='';document.getElementById('fEvent').value='';renderPublicEntries();}
-function renderPublicEntries(){let all=get('tn_entries',[]);let q=(document.getElementById('fSearch').value||'').toLowerCase();let meet=document.getElementById('fMeet').value;let age=document.getElementById('fAge').value;let gender=document.getElementById('fGender').value;let ev=document.getElementById('fEvent').value;let filt=all.filter(e=>{if(meet&&e.meet!=meet)return false;if(age&&e.age!=age)return false;if(gender&&e.gender!=gender)return false;if(ev&&!(e.event||'').includes(ev))return false;if(q&&!((e.name||'').toLowerCase().includes(q)||(e.district||'').toLowerCase().includes(q)||(e.school||'').toLowerCase().includes(q)))return false;return true;});document.getElementById('totalCount').innerText=all.length;let males=all.filter(e=>e.gender=='Male').length;let females=all.filter(e=>e.gender=='Female').length;let ath=all.filter(e=>e.meet=='Athletics').length;let swm=all.filter(e=>e.meet=='Swimming').length;document.getElementById('totalSub').innerText='👦 Male: '+males+' | 👧 Female: '+females+' | 🏃 Athletics: '+ath+' | 🏊 Swimming: '+swm;document.getElementById('filterMsg').innerText='Showing: '+filt.length+' / Total: '+all.length+' Entries';let h='';filt.forEach((e,i)=>{h+='<div class="card"><b>'+(i+1)+'. '+e.name+'</b> - '+e.meet+'<br>📍 '+(e.district||'')+' | '+(e.school||'')+'<br>🎂 DOB: '+(e.dob||'')+' | <b>'+(e.age||'')+'</b> | '+(e.gender||'')+'<br>🏅 Events: <b>'+(e.event||'')+'</b><br><span style="font-size:11px;color:#64748b">'+(e.source||'')+' | '+(e.time||'')+'</span></div>';});document.getElementById('entriesList').innerHTML=h||'<p style="text-align:center">No Entries Found - Filter-a Maathunga</p>';}
+function renderPublicEntries(){let all=get('tn_entries',[]);let q=(document.getElementById('fSearch').value||'').toLowerCase();let meet=document.getElementById('fMeet').value;let age=document.getElementById('fAge').value;let gender=document.getElementById('fGender').value;let ev=document.getElementById('fEvent').value;let filt=all.filter(e=>{if(meet&&e.meet!=meet)return false;if(age&&e.age!=age)return false;if(gender&&e.gender!=gender)return false;if(ev&&!(e.event||'').includes(ev))return false;if(q&&!((e.name||'').toLowerCase().includes(q)||(e.district||'').toLowerCase().includes(q)||(e.school||'').toLowerCase().includes(q)))return false;return true;});document.getElementById('totalCount').innerText=all.length;let males=all.filter(e=>e.gender=='Male').length;let females=all.filter(e=>e.gender=='Female').length;let ath=all.filter(e=>e.meet=='Athletics').length;let swm=all.filter(e=>e.meet=='Swimming').length;document.getElementById('totalSub').innerText='👦 Male: '+males+' | 👧 Female: '+females+' | 🏃 Athletics: '+ath+' | 🏊 Swimming: '+swm;document.getElementById('filterMsg').innerText='Showing: '+filt.length+' / Total: '+all.length+' Entries';let h='';filt.forEach((e,i)=>{h+='<div class="card"><b>'+(i+1)+'. '+e.name+'</b> - '+e.meet+'<br>📍 '+(e.district||'')+' | '+(e.school||'')+'<br>🎂 DOB: '+(e.dob||'')+' | <b>'+(e.age||'')+'</b> | '+(e.gender||'')+'<br>🏅 Events: <b>'+(e.event||'')+'</b><br><span style="font-size:11px;color:#64748b">'+(e.source||'')+' | '+(e.time||'')+'</span></div>';});document.getElementById('entriesList').innerHTML=h||'<p style="text-align:center">No Entries Found</p>';}
 function initPublic(){let s=settings();let pm=document.getElementById('pMeet');pm.innerHTML='';let allowed=s.meetCtrl=='Both'?['Athletics','Swimming']:[s.meetCtrl];allowed.forEach(m=>{let o=document.createElement('option');o.text=m;pm.add(o);});fillPublicEvents();loadAgeSettings();}
 function fillPublicEvents(){let m=document.getElementById('pMeet').value;let arr=getEvents()[m]||[];let sel=document.getElementById('pEventSel');sel.innerHTML='';arr.forEach(e=>{let o=document.createElement('option');o.text=e;sel.add(o);});}
 function addPublicEvent(){let v=document.getElementById('pEventSel').value;if(pubEvents.includes(v))return;if(pubEvents.length>=5){alert('Max 5');return;}pubEvents.push(v);document.getElementById('pSelected').innerText='Selected: '+pubEvents.join(', ')+' ('+pubEvents.length+'/5)';}
@@ -263,7 +267,6 @@ function adminTestStart(){let ev=document.getElementById('adminTestEvent').value
 function adminTestStop(lane){let race=get('tn_live_race',null);if(!race||race.status!='RUNNING'){alert('First START Press Pannunga');return;}if(race.results[lane]){alert('Already Finished');return;}let elapsed=Date.now()-race.startAt;race.results[lane]={name:'Test Player '+lane,lane:lane,elapsed:elapsed,timeStr:fmt(elapsed)};let sorted=Object.values(race.results).sort((a,b)=>a.elapsed-b.elapsed);sorted.forEach((r,i)=>{race.results[r.lane].place=i+1;race.results[r.lane].placeText=i==0?'1st Place 🥇':i==1?'2nd Place 🥈':i==2?'3rd Place 🥉':(i+1)+'th Place';});set('tn_live_race',race);document.getElementById('adminTestResult').innerHTML+='<div class="card">✅ Lane '+lane+' STOPPED - <b>'+fmt(elapsed)+'</b> - '+race.results[lane].placeText+'</div>';alert('⏹️ ADMIN STOPPED! Lane '+lane+' - '+fmt(elapsed));renderStartFinish();}
 function adminDemoRace(){adminTestStart();setTimeout(()=>adminTestStop(2),2000);setTimeout(()=>adminTestStop(1),3500);setTimeout(()=>adminTestStop(3),5200);alert('🎬 DEMO Started!');}
 function adminTestReset(){localStorage.removeItem('tn_live_race');document.getElementById('adminTestTimer').innerText='00:00.00';document.getElementById('adminTestResult').innerHTML='';alert('Reset Aaiduchu');renderStartFinish();}
-function uploadEntryExcel(e){let f=e.target.files[0];if(!f)return;let rd=new FileReader();rd.onload=function(ev){let wb=XLSX.read(ev.target.result,{type:'binary'});let ws=wb.Sheets[wb.SheetNames[0]];let rows=XLSX.utils.sheet_to_json(ws,{header:1});let arr=get('tn_entries',[]);rows.slice(1).forEach(r=>{if(r[0])arr.push({meet:document.getElementById('eMeet').value,name:r[0],phone:r[1]||'',district:r[2]||'',dob:r[3]||'',age:r[4]||calcAgeGroup(r[3]||''),gender:r[5]||'Male',event:r[6]||'',startTime:settings().commonStart,finishTime:''});});set('tn_entries',arr);alert('Excel ✅');renderAll();};rd.readAsBinaryString(f);}
 function uploadOrderExcel(e){let f=e.target.files[0];if(!f)return;let rd=new FileReader();rd.onload=function(ev){let wb=XLSX.read(ev.target.result,{type:'binary'});let ws=wb.Sheets[wb.SheetNames[0]];let rows=XLSX.utils.sheet_to_json(ws,{header:1});let ord=rows.slice(1).map(r=>({event:r[0]||'',name:r[1]||'',lane:r[2]||'',time:r[3]||''}));set('tn_order',ord);alert('Order ✅');renderOrder();};rd.readAsBinaryString(f);}
 function uploadOrderPdf(e){let f=e.target.files[0];if(!f)return;let ord=get('tn_order',[]);ord.push({event:'PDF - '+f.name,name:'PDF Open Pannunga',lane:''});set('tn_order',ord);alert('PDF ✅');renderOrder();}
 if(window.location.search.includes('entries')){document.getElementById('loginBox').classList.add('hidden');document.getElementById('entriesBox').classList.remove('hidden');fillFilterEvents();renderPublicEntries();}
