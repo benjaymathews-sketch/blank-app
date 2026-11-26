@@ -3,214 +3,171 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TN State Meet 2026 - Common App</title>
+<title>TN Meet 2026 - Live Race + Certificate</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 body{font-family:Arial;background:#eef2ff;padding:15px;margin:0}
-.box{max-width:820px;margin:auto;background:#fff;padding:20px;border-radius:12px}
+.box{max-width:850px;margin:auto;background:#fff;padding:20px;border-radius:12px}
 input,select{width:100%;padding:11px;margin:7px 0;border:1px solid #ccc;border-radius:8px;box-sizing:border-box}
 button{padding:11px 14px;border:0;border-radius:8px;font-weight:bold;cursor:pointer;color:#fff;margin:3px}
 .card{border:1px solid #e2e8f0;padding:14px;border-radius:10px;margin:10px 0;background:#f8fafc}
 .small{font-size:13px;color:#475569;line-height:1.7}
 .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:bold;color:#fff}
 label{font-size:12px;font-weight:bold}
-table{width:100%;border-collapse:collapse;font-size:13px}td,th{border:1px solid #ddd;padding:7px;text-align:left}
 .hidden{display:none}
+.bigTimer{font-size:42px;font-weight:bold;text-align:center;color:#dc2626;background:#fef2f2;padding:15px;border-radius:12px}
+.cert{border:5px double #b45309;padding:28px;text-align:center;background:#fffbeb;border-radius:12px;max-width:680px;margin:20px auto}
+.cert img{max-width:110px;max-height:110px}
+@media print{body *{visibility:hidden}.cert,.cert *{visibility:visible}.cert{position:absolute;top:0;left:0;width:100%;border:5px double #000}}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
 <div class="box" id="loginBox">
 <h2 style="text-align:center">🏆 Tamil Nadu State Meet 2026</h2><p style="text-align:center">17 to 19 Dec 2026 - Chennai</p>
 <h3 style="text-align:center">🔐 Login</h3>
-<label>User ID</label><input id="loginId" placeholder="User ID - Admin Kuduthadhu">
-<label>Password</label><input id="loginPass" type="password" placeholder="Password">
+<input id="loginId" placeholder="User ID"><input id="loginPass" type="password" placeholder="Password">
 <button style="background:#0b5cff;width:100%" onclick="doLogin()">Login</button>
-<p style="text-align:center;font-size:12px;color:#64748b">First Time? Admin Login: User ID = <b>admin</b> / Password = <b>admin123</b><br>Admin Dhan Mathavangalukku ID / Password Kuduppar</p>
-<p id="loginErr" style="color:red;text-align:center"></p>
+<p style="text-align:center;font-size:12px;color:#64748b">Admin: <b>admin / admin123</b></p><p id="loginErr" style="color:red;text-align:center"></p>
 </div>
 
-<!-- MAIN -->
 <div class="box hidden" id="mainBox">
-<p>👋 Welcome: <b id="who"></b> | Role: <b id="whoRole"></b> <button style="background:#64748b;float:right" onclick="logout()">Logout</button></p><hr>
+<p>👋 <b id="who"></b> | <b id="whoRole"></b> <button style="background:#64748b;float:right" onclick="logout()">Logout</button></p><hr>
 
-<!-- ADMIN ONLY -->
+<!-- ADMIN -->
 <div id="adminPanel" class="hidden">
-<h2>🛡️ Admin Panel - Full Control</h2>
-<h3>1. Meet Control - Admin Select Pannina Meet Mattum Entry la Varum</h3>
-<label>Enabled Meet (Entry Form la Idhu Mattum Theriyum)</label>
-<select id="adminMeetCtrl"><option value="Both">Both - Athletics + Swimming</option><option value="Athletics">Athletics Mattum</option><option value="Swimming">Swimming Mattum</option></select>
-<label>Common Start Time - Ellarukkum Onnu</label><input id="commonStart" type="time" value="09:00">
-<label>Track / Lanes</label><select id="laneCount"><option value="6">6 Tracks / Lanes</option><option value="8">8 Tracks / Lanes</option></select>
-<button style="background:#0b5cff" onclick="saveAdminSettings()">✅ Save Meet Settings</button>
-<p id="adminSetMsg" style="color:green"></p>
+<h2>🛡️ Admin Panel</h2>
+<label>Enabled Meet</label><select id="adminMeetCtrl"><option value="Both">Both</option><option value="Athletics">Athletics Mattum</option><option value="Swimming">Swimming Mattum</option></select>
+<label>Common Start Time</label><input id="commonStart" type="time" value="09:00">
+<label>Lanes</label><select id="laneCount"><option value="6">6 Lanes</option><option value="8" selected>8 Lanes</option></select>
+<button style="background:#0b5cff" onclick="saveAdminSettings()">✅ Save Settings</button><p id="adminSetMsg" style="color:green"></p>
 
-<h3>2. Create User - ID + Password Admin Mattum Paarppar</h3>
-<label>New User ID</label><input id="newUid" placeholder="Ex: entry1, official1, startref1">
-<label>New Password</label><input id="newUpass" placeholder="Password Type Pannunga - Yaarukkum Kaatadhu">
-<label>Role</label><select id="newRole"><option value="entry">Entry Staff</option><option value="official">Official</option><option value="startref">Starting Referee</option><option value="finishref">Finishing Referee</option><option value="admin">Admin</option></select>
-<label>Assigned Meet</label><select id="newMeet"><option>Athletics</option><option>Swimming</option><option>Both</option></select>
-<button style="background:#16a34a;width:100%" onclick="createUser()">✅ Create User</button>
-<p style="font-size:12px;color:red">⚠️ Password Inga Type Pannadhukku Appuram Engayum Kaata Maattom. Admin Dhan Direct-a Concerned Person-kku Sollanum.</p>
-<h3>Created Users - Password Kaata Maattom</h3><div id="userList"></div>
+<h3>👤 Create User - Password Kaata Maattom</h3>
+<input id="newUid" placeholder="New User ID"><input id="newUpass" placeholder="New Password">
+<select id="newRole"><option value="entry">Entry Staff</option><option value="official">Official</option><option value="startref">Starting Referee</option><option value="finishref">Finishing Referee</option><option value="admin">Admin</option></select>
+<select id="newMeet"><option>Athletics</option><option>Swimming</option><option>Both</option></select>
+<button style="background:#16a34a;width:100%" onclick="createUser()">✅ Create User</button><div id="userList"></div>
 
-<h3>3. Upload - Order of Events (Excel / PDF)</h3>
-<label>Excel File - Order of Events</label><input type="file" id="orderExcel" accept=".xlsx,.xls,.csv" onchange="uploadOrderExcel(event)">
-<label>PDF File - Order of Events</label><input type="file" id="orderPdf" accept=".pdf" onchange="uploadOrderPdf(event)">
-<div id="orderList"></div>
-<h3>4. All Entries - Full Details - Edit / Delete</h3><button style="background:#0b5cff" onclick="renderAll()">🔄 Refresh</button><div id="adminEntries"></div>
+<h3>🎓 Certificate Template - Edit All Header / Footer / Logo</h3>
+<div style="background:#fef9c3;padding:14px;border-radius:10px">
+<label>📷 Logo Upload</label><input type="file" accept="image/*" onchange="uploadLogo(event)"><div id="logoPreview"></div>
+<label>Header Line 1 - Top Periya Ezuthu</label><input id="certH1" value="TAMIL NADU STATE MEET 2026">
+<label>Header Line 2</label><input id="certH2" value="Tamil Nadu Swimming & Athletics Association">
+<label>Header Line 3 - Date / Venue</label><input id="certH3" value="17 to 19 December 2026 - Chennai">
+<label>Certificate Title</label><input id="certTitle" value="CERTIFICATE OF MERIT">
+<label>Certificate Sub Text</label><input id="certSub" value="This is to certify that">
+<label>Footer Line 1</label><input id="certF1" value="Chennai - Tamil Nadu">
+<label>Footer Line 2</label><input id="certF2" value="www.tnmeet2026.com | Secretary: 98765 43210">
+<label>Signature 1 - Left</label><input id="certS1" value="Starting Referee">
+<label>Signature 2 - Middle</label><input id="certS2" value="Finishing Referee">
+<label>Signature 3 - Right</label><input id="certS3" value="General Secretary">
+<label>Certificate Background Colour</label><select id="certBg"><option value="#fffbeb">Light Yellow</option><option value="#eff6ff">Light Blue</option><option value="#f0fdf4">Light Green</option><option value="#ffffff">White</option></select>
+<button style="background:#b45309;width:100%" onclick="saveCertTemplate()">✅ Save Certificate Template</button>
+<button style="background:#64748b;width:100%" onclick="previewCert()">👁️ Preview Certificate</button>
+<p id="certSaveMsg" style="color:green;text-align:center"></p>
 </div>
 
-<!-- ENTRY ONLY -->
+<h3>Order of Events - Excel / PDF</h3><input type="file" accept=".xlsx,.xls,.csv" onchange="uploadOrderExcel(event)"><input type="file" accept=".pdf" onchange="uploadOrderPdf(event)"><div id="orderList"></div>
+<h3>All Entries</h3><button style="background:#0b5cff" onclick="renderAll()">🔄 Refresh</button><div id="adminEntries"></div>
+</div>
+
+<!-- ENTRY -->
 <div id="entryPanel" class="hidden">
-<h2>📝 Entry Form - Entry Staff Mattum</h2>
-<p>Ungalukku Allotted Meet: <b id="entryMeetInfo"></b></p>
-<h3>Upload Excel - Bulk Entry</h3>
-<label>Excel File - Name, Phone, District, DOB, Age, Gender, Events</label><input type="file" accept=".xlsx,.xls,.csv" onchange="uploadEntryExcel(event)">
-<p style="font-size:12px">Excel Format: Column A=Name, B=Phone, C=District, D=DOB, E=Age, F=Gender, G=Events</p><hr>
-<label>Meet - Dropdown Mattum *</label><select id="eMeet" onchange="fillEvents()"></select>
-<label>Player Name *</label><input id="eName" placeholder="Player Name">
-<label>Phone</label><input id="ePhone" placeholder="Phone">
-<label>District</label><input id="eDistrict" placeholder="District">
-<label>DOB *</label><input id="eDob" type="date">
-<label>Age Group</label><select id="eAge"><option>Under 14</option><option>Under 16</option><option>Under 18</option><option>Under 20</option><option>Open</option></select>
-<label>Gender</label><select id="eGender"><option>Male</option><option>Female</option></select>
-<label>Event - Dropdown - Oru Oru Event-a Add Pannunga - Max 5</label><select id="eEventSel"></select>
-<button style="background:#16a34a" onclick="addEvent()">+ Add Event</button>
-<p id="eSelected">Selected: None (0/5)</p>
-<button style="background:#0b5cff;width:100%" onclick="saveEntry()">✅ Submit Entry</button><p id="eMsg" style="color:green;text-align:center"></p>
-<h3>En Entries</h3><div id="myEntries"></div>
+<h2>📝 Entry Form</h2><p>Allotted Meet: <b id="entryMeetInfo"></b></p>
+<input type="file" accept=".xlsx,.xls,.csv" onchange="uploadEntryExcel(event)"><p style="font-size:12px">Excel: A=Name, B=Phone, C=District, D=DOB, E=Age, F=Gender, G=Events</p>
+<label>Meet - Dropdown *</label><select id="eMeet" onchange="fillEvents()"></select>
+<input id="eName" placeholder="Player Name *"><input id="ePhone" placeholder="Phone"><input id="eDistrict" placeholder="District"><label>DOB *</label><input id="eDob" type="date">
+<select id="eAge"><option>Under 14</option><option>Under 16</option><option>Under 18</option><option>Under 20</option><option>Open</option></select>
+<select id="eGender"><option>Male</option><option>Female</option></select>
+<label>Event - Dropdown - Max 5</label><select id="eEventSel"></select><button style="background:#16a34a" onclick="addEvent()">+ Add Event</button><p id="eSelected">Selected: None (0/5)</p>
+<button style="background:#0b5cff;width:100%" onclick="saveEntry()">✅ Submit Entry</button><p id="eMsg" style="color:green;text-align:center"></p><div id="myEntries"></div>
 </div>
 
-<!-- OFFICIAL ONLY -->
-<div id="officialPanel" class="hidden">
-<h2>📋 Official Panel</h2>
-<p>Common Start Time: <b id="offCommonStart"></b> | Lanes: <b id="offLanes"></b></p>
-<h3>Order of Events</h3><div id="offOrder"></div>
-<h3>Set Schedule - Common Start + Per Event End Time</h3>
-<label>Event</label><select id="schEvent"></select>
-<label>Date</label><input id="schDate" type="date" value="2026-12-17">
-<label>Common Start Time</label><input id="schStart" type="time" value="09:00">
-<label>End Time - Andha Event-ku</label><input id="schEnd" type="time" value="10:00">
-<label>Official Name</label><input id="schOfficial" placeholder="Official Name">
-<button style="background:#16a34a;width:100%" onclick="saveSchedule()">✅ Save Schedule</button><div id="offSchedule"></div>
-<h3>All Players - Start / Finish Time Set Pannalam</h3><div id="offPlayers"></div>
-</div>
+<!-- OFFICIAL -->
+<div id="officialPanel" class="hidden"><h2>📋 Official Panel</h2><div id="offOrder"></div><select id="schEvent"></select><input id="schDate" type="date" value="2026-12-17"><input id="schStart" type="time" value="09:00"><input id="schEnd" type="time" value="10:00"><input id="schOfficial" placeholder="Official Name"><button style="background:#16a34a;width:100%" onclick="saveSchedule()">✅ Save Schedule</button><div id="offSchedule"></div></div>
 
-<!-- START REFEREE ONLY -->
+<!-- START -->
 <div id="startPanel" class="hidden">
-<h2>🚦 Starting Referee</h2>
-<p>Common Start Time: <b id="startCommon"></b></p>
-<h3>Order of Events Padi - Players List</h3><div id="startList"></div>
+<h2>🚦 Starting Referee - LIVE</h2><label>Select Event</label><select id="liveEventSel"></select><label>Heat</label><select id="liveHeat"><option>Heat 1</option><option>Heat 2</option><option>Heat 3</option><option>Heat 4</option></select>
+<div id="liveStatus" style="text-align:center;font-weight:bold;margin:10px"></div><div class="bigTimer" id="starterTimer">00:00.00</div>
+<button style="background:#dc2626;width:100%;font-size:18px;padding:16px" onclick="starterStart()">🚦 START RACE</button>
+<button style="background:#64748b;width:100%" onclick="starterReset()">🔄 RESET Race</button><div id="startList"></div>
 </div>
 
-<!-- FINISH REFEREE ONLY -->
+<!-- FINISH -->
 <div id="finishPanel" class="hidden">
-<h2>🏁 Finishing Referee</h2>
-<p>Common Start Time: <b id="finishCommon"></b> - Finish Time Oru Oru Aala-kkum Vera Vera Podunga</p>
-<h3>Order of Events Padi - Finish Entry</h3><div id="finishList"></div>
-<h3>All Finish Results</h3><div id="finishResults"></div>
+<h2>🏁 Finishing Referee - LIVE</h2><div id="finishLiveInfo" style="text-align:center;font-weight:bold"></div><div class="bigTimer" id="finishTimer">Waiting for Starter... ⏳</div>
+<h3>Stop Time - Lane Wise</h3><div id="finishList"></div><h3>🏆 Auto Results</h3><div id="finishResults"></div>
 </div>
 
+<div id="certPanel" class="hidden"><h2>🎓 Certificates</h2><div id="certList"></div></div>
+</div>
+
+<!-- CERTIFICATE PRINT -->
+<div id="printCert" class="cert hidden">
+<img id="cLogo" src="" style="display:none">
+<h2 id="pH1" style="margin:4px;color:#92400e"></h2><p id="pH2" style="margin:2px"></p><p id="pH3" style="margin:2px;color:#64748b"></p><hr>
+<h1 id="pTitle" style="color:#92400e"></h1><p id="pSub"></p>
+<h2 id="cName" style="font-size:34px;margin:8px"></h2>
+<p>has secured</p><h2 id="cPlace" style="color:#dc2626;margin:6px"></h2>
+<p>in the event of</p><h3 id="cEvent" style="margin:6px"></h3>
+<table style="margin:12px auto;border-collapse:collapse"><tr><td style="border:1px solid #ddd;padding:10px"><b>Gender</b><br><span id="cGender"></span></td><td style="border:1px solid #ddd;padding:10px"><b>Time</b><br><span id="cTime" style="color:#0b5cff;font-weight:bold"></span></td><td style="border:1px solid #ddd;padding:10px"><b>District</b><br><span id="cDistrict"></span></td></tr></table>
+<p id="pF1" style="margin:2px"></p><p id="pF2" style="margin:2px;font-size:12px;color:#64748b"></p><br>
+<table style="width:100%;border:0"><tr><td style="border:0">___________<br><span id="pS1"></span></td><td style="border:0">___________<br><span id="pS2"></span></td><td style="border:0">___________<br><span id="pS3"></span></td></tr></table><br>
+<button onclick="window.print()" style="background:#16a34a">🖨️ Print Certificate</button> <button onclick="document.getElementById('printCert').classList.add('hidden')" style="background:#64748b">Close</button>
 </div>
 
 <script>
 let cur=null, selEvents=[];
 let ATH=["100m","200m","400m","800m","1500m","Long Jump","High Jump","Shot Put","Discus Throw","Javelin Throw"];
 let SWM=["50m Freestyle","100m Freestyle","200m Freestyle","50m Backstroke","100m Backstroke","50m Breaststroke","100m Breaststroke","50m Butterfly","100m Butterfly","200m Individual Medley"];
-function get(k,d){return JSON.parse(localStorage.getItem(k)||JSON.stringify(d));}
+function get(k,d){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d));}catch(e){return d;}}
 function set(k,v){localStorage.setItem(k,JSON.stringify(v));}
 function settings(){return get('tn_settings',{meetCtrl:'Both',commonStart:'09:00',lanes:'8'});}
 function users(){return get('tn_users',[{uid:'admin',pass:'admin123',role:'admin',meet:'Both'}]);}
+function certTpl(){return get('tn_cert',{h1:'TAMIL NADU STATE MEET 2026',h2:'Tamil Nadu Swimming & Athletics Association',h3:'17 to 19 December 2026 - Chennai',title:'CERTIFICATE OF MERIT',sub:'This is to certify that',f1:'Chennai - Tamil Nadu',f2:'www.tnmeet2026.com | Secretary: 98765 43210',s1:'Starting Referee',s2:'Finishing Referee',s3:'General Secretary',bg:'#fffbeb',logo:''});}
 function show(id,yes){document.getElementById(id).classList.toggle('hidden',!yes);}
+function fmt(ms){if(ms<0)ms=0;let m=Math.floor(ms/60000);let s=Math.floor((ms%60000)/1000);let cs=Math.floor((ms%1000)/10);return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+'.'+String(cs).padStart(2,'0');}
 
-function doLogin(){
-  let id=document.getElementById('loginId').value.trim();
-  let pw=document.getElementById('loginPass').value;
-  let u=users().find(x=>x.uid==id && x.pass==pw);
-  if(!u){document.getElementById('loginErr').innerText='Wrong ID / Password - Admin-a Contact Pannunga';return;}
-  cur=u; localStorage.setItem('tn_cur',JSON.stringify(u));
-  document.getElementById('loginBox').classList.add('hidden');
-  document.getElementById('mainBox').classList.remove('hidden');
-  document.getElementById('who').innerText=u.uid; document.getElementById('whoRole').innerText=u.role+' - '+u.meet;
-  show('adminPanel',u.role=='admin'); show('entryPanel',u.role=='entry'||u.role=='admin'); show('officialPanel',u.role=='official'||u.role=='admin'); show('startPanel',u.role=='startref'||u.role=='admin'); show('finishPanel',u.role=='finishref'||u.role=='admin');
-  // Admin mattum ella panel-um paarppar, mathavangalukku avanga panel mattum
-  if(u.role!='admin'){ show('entryPanel',u.role=='entry'); show('officialPanel',u.role=='official'); show('startPanel',u.role=='startref'); show('finishPanel',u.role=='finishref'); }
-  initPanels();
-}
+function doLogin(){let id=document.getElementById('loginId').value.trim();let pw=document.getElementById('loginPass').value;let u=users().find(x=>x.uid==id&&x.pass==pw);if(!u){document.getElementById('loginErr').innerText='Wrong ID / Password';return;}cur=u;set('tn_cur',u);document.getElementById('loginBox').classList.add('hidden');document.getElementById('mainBox').classList.remove('hidden');document.getElementById('who').innerText=u.uid;document.getElementById('whoRole').innerText=u.role+' - '+u.meet;show('adminPanel',u.role=='admin');show('entryPanel',u.role=='entry');show('officialPanel',u.role=='official');show('startPanel',u.role=='startref');show('finishPanel',u.role=='finishref');show('certPanel',true);if(u.role=='admin'){show('entryPanel',true);show('officialPanel',true);show('startPanel',true);show('finishPanel',true);}initPanels();startPolling();}
 function logout(){localStorage.removeItem('tn_cur');location.reload();}
-function initPanels(){ let s=settings(); document.getElementById('offCommonStart').innerText=s.commonStart; document.getElementById('offLanes').innerText=s.lanes; document.getElementById('startCommon').innerText=s.commonStart; document.getElementById('finishCommon').innerText=s.commonStart; document.getElementById('adminMeetCtrl').value=s.meetCtrl; document.getElementById('commonStart').value=s.commonStart; document.getElementById('laneCount').value=s.lanes;
-  // Entry Meet Dropdown - Admin Settings Padi Mattum
-  let em=document.getElementById('eMeet'); em.innerHTML='';
-  let allowed=[]; if(cur.meet=='Both'||cur.role=='admin'){ if(s.meetCtrl=='Both') allowed=['Athletics','Swimming']; else allowed=[s.meetCtrl]; } else { if(s.meetCtrl=='Both'||s.meetCtrl==cur.meet) allowed=[cur.meet]; else allowed=[s.meetCtrl]; }
-  allowed.forEach(m=>{let o=document.createElement('option');o.text=m;em.add(o);});
-  document.getElementById('entryMeetInfo').innerText=allowed.join(', ');
-  fillEvents(); renderAll(); renderOrder(); renderOfficial(); renderStartFinish();
+function initPanels(){let s=settings();let ct=certTpl();document.getElementById('adminMeetCtrl').value=s.meetCtrl;document.getElementById('commonStart').value=s.commonStart;document.getElementById('laneCount').value=s.lanes;
+document.getElementById('certH1').value=ct.h1;document.getElementById('certH2').value=ct.h2;document.getElementById('certH3').value=ct.h3;document.getElementById('certTitle').value=ct.title;document.getElementById('certSub').value=ct.sub;document.getElementById('certF1').value=ct.f1;document.getElementById('certF2').value=ct.f2;document.getElementById('certS1').value=ct.s1;document.getElementById('certS2').value=ct.s2;document.getElementById('certS3').value=ct.s3;document.getElementById('certBg').value=ct.bg;document.getElementById('logoPreview').innerHTML=ct.logo?`<img src="${ct.logo}" style="width:90px">`:'<p style="font-size:12px">No Logo Yet - Upload Pannunga</p>';
+let em=document.getElementById('eMeet');em.innerHTML='';let allowed=[];if(cur.meet=='Both'||cur.role=='admin'){allowed=s.meetCtrl=='Both'?['Athletics','Swimming']:[s.meetCtrl];}else{allowed=(s.meetCtrl=='Both'||s.meetCtrl==cur.meet)?[cur.meet]:[s.meetCtrl];}allowed.forEach(m=>{let o=document.createElement('option');o.text=m;em.add(o);});document.getElementById('entryMeetInfo').innerText=allowed.join(', ');fillEvents();renderAll();renderOrder();renderOfficial();renderStartFinish();renderLiveEventList();}
+function fillEvents(){let m=document.getElementById('eMeet').value;let arr=m=='Swimming'?SWM:ATH;let sel=document.getElementById('eEventSel');sel.innerHTML='';arr.forEach(e=>{let o=document.createElement('option');o.text=e;sel.add(o);});let sch=document.getElementById('schEvent');if(sch){sch.innerHTML='';[...ATH.map(x=>x+' - Athletics'),...SWM.map(x=>x+' - Swimming')].forEach(e=>{let o=document.createElement('option');o.text=e;sch.add(o);});}}
+function addEvent(){let v=document.getElementById('eEventSel').value;if(selEvents.includes(v))return;if(selEvents.length>=5){alert('Max 5');return;}selEvents.push(v);document.getElementById('eSelected').innerText='Selected: '+selEvents.join(', ')+' ('+selEvents.length+'/5)';}
+function saveEntry(){let meet=document.getElementById('eMeet').value,name=document.getElementById('eName').value,dob=document.getElementById('eDob').value;if(!name||!dob){alert('Name + DOB');return;}if(!selEvents.length){alert('Event Add Pannunga');return;}let arr=get('tn_entries',[]);arr.push({meet:meet,name:name,phone:document.getElementById('ePhone').value,district:document.getElementById('eDistrict').value,dob:dob,age:document.getElementById('eAge').value,gender:document.getElementById('eGender').value,event:selEvents.join(', '),startTime:settings().commonStart,finishTime:'',time:new Date().toLocaleString()});set('tn_entries',arr);selEvents=[];document.getElementById('eMsg').innerText='Entry Saved ✅ - '+name;renderAll();}
+function saveAdminSettings(){set('tn_settings',{meetCtrl:document.getElementById('adminMeetCtrl').value,commonStart:document.getElementById('commonStart').value,lanes:document.getElementById('laneCount').value});document.getElementById('adminSetMsg').innerText='Saved ✅';initPanels();}
+function createUser(){let uid=document.getElementById('newUid').value.trim(),pw=document.getElementById('newUpass').value;if(!uid||!pw){alert('ID + Password');return;}let arr=users();if(arr.find(x=>x.uid==uid)){alert('Already Irukku');return;}arr.push({uid:uid,pass:pw,role:document.getElementById('newRole').value,meet:document.getElementById('newMeet').value});set('tn_users',arr);alert('User Created ✅ ID: '+uid);document.getElementById('newUid').value='';document.getElementById('newUpass').value='';renderAll();}
+
+// === CERTIFICATE TEMPLATE ===
+function uploadLogo(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=function(ev){let ct=certTpl();ct.logo=ev.target.result;set('tn_cert',ct);document.getElementById('logoPreview').innerHTML=`<img src="${ct.logo}" style="width:90px">`;alert('Logo Uploaded ✅');};r.readAsDataURL(f);}
+function saveCertTemplate(){let ct=certTpl();ct.h1=document.getElementById('certH1').value;ct.h2=document.getElementById('certH2').value;ct.h3=document.getElementById('certH3').value;ct.title=document.getElementById('certTitle').value;ct.sub=document.getElementById('certSub').value;ct.f1=document.getElementById('certF1').value;ct.f2=document.getElementById('certF2').value;ct.s1=document.getElementById('certS1').value;ct.s2=document.getElementById('certS2').value;ct.s3=document.getElementById('certS3').value;ct.bg=document.getElementById('certBg').value;set('tn_cert',ct);document.getElementById('certSaveMsg').innerText='Certificate Template Saved ✅ - Ippo Ella Certificate-um Idhu Pola Dhan Varum';}
+function previewCert(){showCert('Demo Player - Priya','100m Freestyle','01:12.45','1st Place 🥇','Female','Chennai');}
+function showCert(name,event,time,place,gender,district){
+  let ct=certTpl();
+  document.getElementById('printCert').style.background=ct.bg;
+  document.getElementById('pH1').innerText=ct.h1;document.getElementById('pH2').innerText=ct.h2;document.getElementById('pH3').innerText=ct.h3;document.getElementById('pTitle').innerText=ct.title;document.getElementById('pSub').innerText=ct.sub;document.getElementById('pF1').innerText=ct.f1;document.getElementById('pF2').innerText=ct.f2;document.getElementById('pS1').innerText=ct.s1;document.getElementById('pS2').innerText=ct.s2;document.getElementById('pS3').innerText=ct.s3;
+  let logo=document.getElementById('cLogo'); if(ct.logo){logo.src=ct.logo;logo.style.display='block';} else {logo.style.display='none';}
+  document.getElementById('cName').innerText=name;document.getElementById('cEvent').innerText=event;document.getElementById('cTime').innerText=time;document.getElementById('cPlace').innerText=place;document.getElementById('cGender').innerText=gender||'-';document.getElementById('cDistrict').innerText=district||'-';
+  document.getElementById('printCert').classList.remove('hidden');window.scrollTo(0,document.getElementById('printCert').offsetTop);
 }
-function fillEvents(){
-  let m=document.getElementById('eMeet').value; let arr=m=='Swimming'?SWM:ATH;
-  let sel=document.getElementById('eEventSel'); sel.innerHTML='';
-  arr.forEach(e=>{let o=document.createElement('option');o.text=e;sel.add(o);});
-  let sch=document.getElementById('schEvent'); if(sch){sch.innerHTML=''; let all=[...ATH.map(x=>x+' - Athletics'),...SWM.map(x=>x+' - Swimming')]; all.forEach(e=>{let o=document.createElement('option');o.text=e;sch.add(o);});}
-}
-function addEvent(){ let v=document.getElementById('eEventSel').value; if(selEvents.includes(v)){alert('Already Added');return;} if(selEvents.length>=5){alert('Max 5 Dhan');return;} selEvents.push(v); document.getElementById('eSelected').innerText='Selected: '+selEvents.join(', ')+' ('+selEvents.length+'/5)'; }
-function saveEntry(){
-  let meet=document.getElementById('eMeet').value, name=document.getElementById('eName').value, dob=document.getElementById('eDob').value;
-  if(!name||!dob){alert('Name + DOB Podunga');return;} if(selEvents.length==0){alert('Oru Event Add Pannunga');return;}
-  let arr=get('tn_entries',[]); arr.push({meet:meet,name:name,phone:document.getElementById('ePhone').value,district:document.getElementById('eDistrict').value,dob:dob,age:document.getElementById('eAge').value,gender:document.getElementById('eGender').value,event:selEvents.join(', '),startTime:settings().commonStart,finishTime:'',lane:'',time:new Date().toLocaleString(),by:cur.uid});
-  set('tn_entries',arr); selEvents=[]; document.getElementById('eSelected').innerText='Selected: None (0/5)'; document.getElementById('eMsg').innerText='Entry Saved ✅ - '+name+' - '+meet; renderAll(); renderStartFinish();
-}
-function saveAdminSettings(){ set('tn_settings',{meetCtrl:document.getElementById('adminMeetCtrl').value,commonStart:document.getElementById('commonStart').value,lanes:document.getElementById('laneCount').value}); document.getElementById('adminSetMsg').innerText='Saved ✅ - Ippo Entry la Idhu Mattum Dhan Varum'; initPanels(); }
-function createUser(){
-  let uid=document.getElementById('newUid').value.trim(), pw=document.getElementById('newUpass').value;
-  if(!uid||!pw){alert('ID + Password Podunga');return;}
-  let arr=users(); if(arr.find(x=>x.uid==uid)){alert('Idhu Already Irukku');return;}
-  arr.push({uid:uid,pass:pw,role:document.getElementById('newRole').value,meet:document.getElementById('newMeet').value}); set('tn_users',arr);
-  alert('User Created ✅\nID: '+uid+'\nRole: '+document.getElementById('newRole').value+'\nPassword-a Neenga Mattum Concerned Person-kku Sollunga - Inga Kaata Maattom');
-  document.getElementById('newUid').value=''; document.getElementById('newUpass').value=''; renderAll();
-}
-function renderAll(){
-  // Users - Password NEVER Show
-  let uHtml=''; users().forEach((u,i)=>{uHtml+=`<div class="card"><b>${u.uid}</b> - Role: ${u.role} - Meet: ${u.meet} - Password: <b>••••••••</b> ${u.uid!='admin'?`<button style="background:#dc2626" onclick="delUser(${i})">Delete</button>`:''}</div>`;}); document.getElementById('userList').innerHTML=uHtml;
-  let arr=get('tn_entries',[]); let h=''; if(arr.length==0)h='<p>No Entries</p>';
-  arr.forEach((e,i)=>{let c=e.meet=='Swimming'?'#0284c7':'#0b5cff'; h+=`<div class="card"><span class="badge" style="background:${c}">${e.meet}</span> <b>${i+1}. ${e.name}</b><div class="small">📞 ${e.phone||'-'} | 📍 ${e.district||'-'} | 📅 DOB: ${e.dob} | 🎂 ${e.age} | 👤 ${e.gender}<br>🏃 ${e.event}<br>⏰ Start: ${e.startTime||settings().commonStart} | 🏁 Finish: ${e.finishTime||'-'} | Lane: ${e.lane||'-'}</div><button style="background:#0b5cff" onclick="editEntry(${i})">✏️ Edit</button> <button style="background:#dc2626" onclick="delEntry(${i})">🗑️ Delete</button><div id="eb${i}" class="hidden" style="margin-top:10px;background:#fff;padding:10px;border-radius:8px"><input id="en${i}" value="${e.name}"><input id="ep${i}" value="${e.phone||''}"><input id="ed${i}" value="${e.district||''}"><input id="ev${i}" value="${e.event}"><button style="background:#16a34a;width:100%" onclick="saveEdit(${i})">✅ Save</button></div></div>`;});
-  document.getElementById('adminEntries').innerHTML=h; document.getElementById('myEntries').innerHTML=h;
-}
-function delUser(i){ if(confirm('User Delete Pannava?')){let a=users();a.splice(i,1);set('tn_users',a);renderAll();} }
-function editEntry(i){let b=document.getElementById('eb'+i);b.classList.toggle('hidden');}
-function saveEdit(i){let a=get('tn_entries',[]);a[i].name=document.getElementById('en'+i).value;a[i].phone=document.getElementById('ep'+i).value;a[i].district=document.getElementById('ed'+i).value;a[i].event=document.getElementById('ev'+i).value;set('tn_entries',a);alert('Updated ✅');renderAll();}
+
+function renderAll(){let uHtml='';users().forEach((u,i)=>{uHtml+=`<div class="card"><b>${u.uid}</b> - ${u.role} - ${u.meet} - Password: <b>••••••••</b> ${u.uid!='admin'?`<button style="background:#dc2626" onclick="delUser(${i})">Delete</button>`:''}</div>`;});document.getElementById('userList').innerHTML=uHtml;let arr=get('tn_entries',[]);let h='';arr.forEach((e,i)=>{h+=`<div class="card"><b>${i+1}. ${e.name}</b> (${e.meet}) - ${e.event} - ${e.gender} - 📍 ${e.district||''} <button style="background:#dc2626" onclick="delEntry(${i})">Delete</button></div>`;});document.getElementById('adminEntries').innerHTML=h||'<p>No Entries</p>';document.getElementById('myEntries').innerHTML=h||'<p>No Entries</p>';}
+function delUser(i){if(confirm('Delete?')){let a=users();a.splice(i,1);set('tn_users',a);renderAll();}}
 function delEntry(i){let a=get('tn_entries',[]);if(confirm('Delete '+a[i].name+'?')){a.splice(i,1);set('tn_entries',a);renderAll();}}
 function saveSchedule(){let arr=get('tn_schedule',[]);arr.push({event:document.getElementById('schEvent').value,date:document.getElementById('schDate').value,start:document.getElementById('schStart').value,end:document.getElementById('schEnd').value,official:document.getElementById('schOfficial').value});set('tn_schedule',arr);renderOfficial();}
-function renderOrder(){let ord=get('tn_order',[]);let h='';if(ord.length==0)h='<p>No Order Uploaded Yet</p>';else{ord.forEach((o,i)=>{h+=`<div class="card">${i+1}. <b>${o.event||''}</b> - ${o.name||''} - Lane: ${o.lane||''} - ${o.time||''}</div>`;});}document.getElementById('orderList').innerHTML=h;document.getElementById('offOrder').innerHTML=h;}
-function renderOfficial(){
-  let arr=get('tn_schedule',[]);let h='';arr.forEach((x,i)=>{h+=`<div class="card"><b>${x.event}</b> - ${x.date} - ⏰ Start: <b>${x.start}</b> | 🏁 End: <b>${x.end}</b> - Official: ${x.official||'-'} <button style="background:#dc2626" onclick="delSch(${i})">Delete</button></div>`;});document.getElementById('offSchedule').innerHTML=h||'<p>No Schedule</p>';
-  let p=get('tn_entries',[]);let ph='';p.forEach((e,i)=>{ph+=`<div class="card"><b>${i+1}. ${e.name}</b> (${e.meet}) - ${e.event}<br>⏰ Start: <input type="time" id="ost${i}" value="${e.startTime||settings().commonStart}" style="width:120px"> 🏁 Finish: <input type="time" id="oen${i}" value="${e.finishTime||''}" style="width:120px"> Lane: <input id="oln${i}" value="${e.lane||''}" placeholder="Lane" style="width:80px"> <button style="background:#16a34a" onclick="saveOffTime(${i})">Save</button></div>`;});document.getElementById('offPlayers').innerHTML=ph||'<p>No Players</p>';
-}
-function delSch(i){let a=get('tn_schedule',[]);a.splice(i,1);set('tn_schedule',a);renderOfficial();}
-function saveOffTime(i){let a=get('tn_entries',[]);a[i].startTime=document.getElementById('ost'+i).value;a[i].finishTime=document.getElementById('oen'+i).value;a[i].lane=document.getElementById('oln'+i).value;set('tn_entries',a);alert('Saved ✅ - Start: '+a[i].startTime+' Finish: '+a[i].finishTime);renderOfficial();renderStartFinish();}
-function renderStartFinish(){
-  let ord=get('tn_order',[]); let players=get('tn_entries',[]);
-  let list = ord.length>0 ? ord : players.map(p=>({event:p.event,name:p.name,lane:p.lane||'',time:p.startTime||''}));
-  let lanes=settings().lanes;
-  let sh=''; list.forEach((o,i)=>{let laneNo=(i%parseInt(lanes))+1; sh+=`<div class="card">Heat ${Math.floor(i/parseInt(lanes))+1} - Lane <b>${laneNo}</b> - <b>${o.name||''}</b> - ${o.event||''} - ⏰ Start: <b>${settings().commonStart}</b> <button style="background:#16a34a" onclick="markStarted(${i})">🚦 Started</button></div>`;});
-  document.getElementById('startList').innerHTML=sh||'<p>No Players</p>';
-  let fh=''; players.forEach((e,i)=>{fh+=`<div class="card"><b>${i+1}. ${e.name}</b> (${e.meet}) - ${e.event} - Lane: <b>${e.lane||((i%parseInt(lanes))+1)}</b><br>⏰ Common Start: <b>${e.startTime||settings().commonStart}</b> | 🏁 Finish Time: <input type="time" id="fin${i}" value="${e.finishTime||''}" style="width:130px"> <button style="background:#ea580c" onclick="saveFinish(${i})">✅ Save Finish</button></div>`;});
-  document.getElementById('finishList').innerHTML=fh||'<p>No Players</p>';
-  let res=get('tn_results',[]); let rh=''; res.forEach((r,i)=>{rh+=`<div class="card">${i+1}. ${r.name} - ${r.event} - Start: ${r.start} - Finish: ${r.finish} - Place: ${r.place}</div>`;}); document.getElementById('finishResults').innerHTML=rh||'<p>No Finish Results Yet</p>';
-}
-function markStarted(i){alert('Started ✅ - Common Start Time: '+settings().commonStart);}
-function saveFinish(i){let a=get('tn_entries',[]);a[i].finishTime=document.getElementById('fin'+i).value;set('tn_entries',a);let r=get('tn_results',[]);r.push({name:a[i].name,event:a[i].event,start:a[i].startTime||settings().commonStart,finish:a[i].finishTime,place:'Finished'});set('tn_results',r);alert('Finish Saved ✅ - '+a[i].name+' - Finish: '+a[i].finishTime);renderStartFinish();}
-function uploadEntryExcel(e){
-  let f=e.target.files[0]; if(!f)return; let rd=new FileReader(); rd.onload=function(ev){let wb=XLSX.read(ev.target.result,{type:'binary'});let ws=wb.Sheets[wb.SheetNames[0]];let rows=XLSX.utils.sheet_to_json(ws,{header:1});let arr=get('tn_entries',[]);let cnt=0;rows.slice(1).forEach(r=>{if(r[0]){arr.push({meet:document.getElementById('eMeet').value,name:r[0],phone:r[1]||'',district:r[2]||'',dob:r[3]||'',age:r[4]||'Open',gender:r[5]||'Male',event:r[6]||'',startTime:settings().commonStart,finishTime:'',time:new Date().toLocaleString()});cnt++;}});set('tn_entries',arr);alert('Excel Uploaded ✅ - '+cnt+' Entries Added');renderAll();renderStartFinish();}; rd.readAsBinaryString(f);
-}
-function uploadOrderExcel(e){
-  let f=e.target.files[0]; if(!f)return; let rd=new FileReader(); rd.onload=function(ev){let wb=XLSX.read(ev.target.result,{type:'binary'});let ws=wb.Sheets[wb.SheetNames[0]];let rows=XLSX.utils.sheet_to_json(ws,{header:1});let ord=rows.slice(1).map(r=>({event:r[0]||'',name:r[1]||'',lane:r[2]||'',time:r[3]||''}));set('tn_order',ord);alert('Order of Events Uploaded ✅ - '+ord.length+' Rows');renderOrder();renderStartFinish();}; rd.readAsBinaryString(f);
-}
-function uploadOrderPdf(e){
-  let f=e.target.files[0]; if(!f)return; let url=URL.createObjectURL(f); let ord=get('tn_order',[]); ord.push({event:'PDF Uploaded - '+f.name,name:'PDF-a Open Panni Paakavum',lane:'',time:''}); set('tn_order',ord); alert('PDF Uploaded ✅ - '+f.name+'\nOrder List la PDF Link-a Kaattum'); renderOrder();
-}
-let saved=localStorage.getItem('tn_cur'); if(saved){document.getElementById('loginId').value=JSON.parse(saved).uid; document.getElementById('loginPass').value=JSON.parse(saved).pass; }
+function renderOrder(){let ord=get('tn_order',[]);let h='';ord.forEach((o,i)=>{h+=`<div class="card">${i+1}. <b>${o.event||''}</b> - ${o.name||''}</div>`;});document.getElementById('orderList').innerHTML=h||'<p>No Order Yet</p>';document.getElementById('offOrder').innerHTML=h||'<p>No Order Yet</p>';}
+function renderOfficial(){let arr=get('tn_schedule',[]);let h='';arr.forEach((x,i)=>{h+=`<div class="card"><b>${x.event}</b> - ${x.date} - Start: <b>${x.start}</b> | End: <b>${x.end}</b></div>`;});document.getElementById('offSchedule').innerHTML=h||'<p>No Schedule</p>';}
+function renderLiveEventList(){let sel=document.getElementById('liveEventSel');if(!sel)return;sel.innerHTML='';let evs=[...new Set(get('tn_entries',[]).map(e=>e.event))];if(evs.length==0)evs=[...ATH,...SWM];evs.forEach(e=>{let o=document.createElement('option');o.text=e;sel.add(o);});}
+function starterStart(){let ev=document.getElementById('liveEventSel').value;let heat=document.getElementById('liveHeat').value;let race={event:ev,heat:heat,startAt:Date.now(),status:'RUNNING',results:{}};let players=get('tn_entries',[]).filter(e=>e.event.includes(ev)).slice(0,parseInt(settings().lanes));race.players=players.map((p,i)=>({name:p.name,district:p.district||'',gender:p.gender||'',lane:i+1,event:ev}));set('tn_live_race',race);alert('🚦 RACE STARTED! '+ev+' - '+heat);renderStartFinish();}
+function starterReset(){if(confirm('Reset?')){localStorage.removeItem('tn_live_race');renderStartFinish();}}
+function stopLane(lane,name){let race=get('tn_live_race',null);if(!race||race.status!='RUNNING'){alert('Race Start Aagala');return;}if(race.results[lane]){alert('Already Finished');return;}let elapsed=Date.now()-race.startAt;race.results[lane]={name:name,lane:lane,elapsed:elapsed,timeStr:fmt(elapsed)};let sorted=Object.values(race.results).sort((a,b)=>a.elapsed-b.elapsed);sorted.forEach((r,i)=>{race.results[r.lane].place=i+1;race.results[r.lane].placeText=i==0?'1st Place 🥇':i==1?'2nd Place 🥈':i==2?'3rd Place 🥉':(i+1)+'th Place';});set('tn_live_race',race);let pInfo=race.players.find(p=>p.lane==lane)||{};let allRes=get('tn_results',[]);allRes.push({name:name,event:race.event,heat:race.heat,lane:lane,time:fmt(elapsed),elapsed:elapsed,place:race.results[lane].place,placeText:race.results[lane].placeText,district:pInfo.district||'',gender:pInfo.gender||''});set('tn_results',allRes);alert('⏹️ STOPPED! Lane '+lane+' - '+name+' - '+fmt(elapsed)+' - '+race.results[lane].placeText);renderStartFinish();}
+function renderStartFinish(){let race=get('tn_live_race',null);let sh='';if(race){race.players.forEach(p=>{let d=race.results[p.lane];sh+=`<div class="card">Lane <b>${p.lane}</b> - <b>${p.name}</b> (${p.gender}) ${d?`<br>✅ ${d.timeStr} - ${d.placeText}`:'<br>⏳ Running...'}</div>`;});}document.getElementById('startList').innerHTML=sh||'<p>No Race</p>';let fh='';if(race){race.players.forEach(p=>{let d=race.results[p.lane];fh+=`<div class="card">Lane <b>${p.lane}</b> - <b>${p.name}</b> - ${p.gender}<br>${d?`✅ <b>${d.timeStr}</b> - ${d.placeText}`:`<button style="background:#dc2626;width:100%" onclick="stopLane(${p.lane},'${p.name.replace(/'/g,"")}')">⏹️ STOP - Lane ${p.lane}</button>`}</div>`;});}document.getElementById('finishList').innerHTML=fh||'<p>Starter START Panna Lanes Varum</p>';let res=get('tn_results',[]).filter(r=>race&&r.event==race.event).sort((a,b)=>a.elapsed-b.elapsed);let rh='';res.forEach((r,i)=>{rh+=`<div class="card"><b>${i+1}. Lane ${r.lane} - ${r.name}</b> (${r.gender}) - <b>${r.time}</b> - ${r.placeText} <button style="background:#16a34a" onclick="showCert('${r.name.replace(/'/g,"")}','${r.event}','${r.time}','${r.placeText}','${r.gender}','${r.district}')">🖨️ Certificate</button></div>`;});document.getElementById('finishResults').innerHTML=rh||'<p>No Finish Yet</p>';let ch='';get('tn_results',[]).sort((a,b)=>a.elapsed-b.elapsed).forEach((r,i)=>{ch+=`<div class="card">${r.name} (${r.gender}) - ${r.event} - ${r.time} - ${r.placeText} <button style="background:#16a34a" onclick="showCert('${r.name.replace(/'/g,"")}','${r.event}','${r.time}','${r.placeText}','${r.gender}','${r.district}')">🖨️ Print Certificate</button></div>`;});document.getElementById('certList').innerHTML=ch||'<p>No Results Yet</p>';document.getElementById('liveStatus').innerText=race?`🟢 LIVE: ${race.event} - ${race.heat}`:'⚪ No Live Race';document.getElementById('finishLiveInfo').innerText=race?`🟢 LIVE: ${race.event} - ${race.heat}`:'⏳ Waiting for Starter...';}
+function startPolling(){setInterval(()=>{let race=get('tn_live_race',null);if(race&&race.status=='RUNNING'){let t=fmt(Date.now()-race.startAt);let st=document.getElementById('starterTimer');if(st)st.innerText=t;let ft=document.getElementById('finishTimer');if(ft)ft.innerText=t;renderStartFinish();}},500);}
+function uploadEntryExcel(e){let f=e.target.files[0];if(!f)return;let rd=new FileReader();rd.onload=function(ev){let wb=XLSX.read(ev.target.result,{type:'binary'});let ws=wb.Sheets[wb.SheetNames[0]];let rows=XLSX.utils.sheet_to_json(ws,{header:1});let arr=get('tn_entries',[]);rows.slice(1).forEach(r=>{if(r[0])arr.push({meet:document.getElementById('eMeet').value,name:r[0],phone:r[1]||'',district:r[2]||'',dob:r[3]||'',age:r[4]||'Open',gender:r[5]||'Male',event:r[6]||'',startTime:settings().commonStart,finishTime:''});});set('tn_entries',arr);alert('Excel ✅');renderAll();};rd.readAsBinaryString(f);}
+function uploadOrderExcel(e){let f=e.target.files[0];if(!f)return;let rd=new FileReader();rd.onload=function(ev){let wb=XLSX.read(ev.target.result,{type:'binary'});let ws=wb.Sheets[wb.SheetNames[0]];let rows=XLSX.utils.sheet_to_json(ws,{header:1});let ord=rows.slice(1).map(r=>({event:r[0]||'',name:r[1]||'',lane:r[2]||'',time:r[3]||''}));set('tn_order',ord);alert('Order ✅');renderOrder();};rd.readAsBinaryString(f);}
+function uploadOrderPdf(e){let f=e.target.files[0];if(!f)return;let ord=get('tn_order',[]);ord.push({event:'PDF - '+f.name,name:'PDF Open Pannunga',lane:''});set('tn_order',ord);alert('PDF ✅');renderOrder();}
 </script>
 </body>
 </html>
