@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TN State Meet 2026 - Checkbox Events + Fee + QR</title>
+<title>TN State Meet 2026 - Cloud Sync</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 body{font-family:Arial;background:#eef2ff;padding:15px;margin:0}
@@ -21,51 +21,46 @@ label{font-size:12px;font-weight:bold}
 .langBtn{background:#fff;color:#0b5cff;border:2px solid #0b5cff!important;padding:8px 14px}
 .feeBox{background:#dcfce7;border:2px solid #16a34a;padding:14px;border-radius:12px;text-align:center}
 .qrBox{background:#fef9c3;padding:14px;border-radius:12px;text-align:center}
-/* CHECKBOX EVENT GRID */
 .evGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
 .evItem{display:flex;align-items:center;gap:8px;background:#f8fafc;border:2px solid #e2e8f0;padding:10px 8px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:bold}
 .evItem.checked{background:#dcfce7;border-color:#16a34a}
 .evItem input{width:20px;height:20px;margin:0;accent-color:#16a34a;cursor:pointer}
-.evItem input:disabled{opacity:0.4}
 @media print{body *{visibility:hidden}.cert,.cert *{visibility:visible}.cert{position:absolute;top:0;left:0;width:100%}}
 </style>
 </head>
 <body>
-
 <div style="max-width:850px;margin:auto;text-align:right;margin-bottom:8px">
 <button class="langBtn" onclick="setLang('en')">🇬🇧 English</button>
 <button class="langBtn" onclick="setLang('ta')">🇮🇳 தமிழ்</button>
 <span id="langShow" style="font-size:12px;color:#64748b"> | Current: English</span>
 </div>
 
-<!-- PUBLIC ENTRIES CHECK -->
 <div class="box hidden" id="entriesBox">
 <h2 style="text-align:center">🏆 Tamil Nadu State Meet 2026</h2>
 <p style="text-align:center">17 to 19 Dec 2026 - Chennai<br><b>📋 Total Entries - Public Check</b></p>
+<p id="cloudStatus" style="text-align:center;font-size:12px;color:#16a34a"></p>
 <div class="totalBox">TOTAL ENTRIES<br><b id="totalCount">0</b><br><span id="totalSub" style="font-size:13px"></span></div>
 <div style="background:#f1f5f9;padding:14px;border-radius:10px;margin-top:12px">
 <label>🔍 Search - Name / District / School</label><input id="fSearch" placeholder="Ex: Priya, Chennai" oninput="renderPublicEntries()">
 <div style="display:flex;gap:5px"><div style="flex:1"><label>Meet</label><select id="fMeet" onchange="renderPublicEntries()"><option value="">All Meet</option><option>Athletics</option><option>Swimming</option></select></div><div style="flex:1"><label>Age Group</label><select id="fAge" onchange="renderPublicEntries()"><option value="">All Age Group</option><option>Under 14</option><option>Under 16</option><option>Under 18</option><option>Under 20</option><option>Open</option></select></div></div>
 <div style="display:flex;gap:5px"><div style="flex:1"><label>Gender</label><select id="fGender" onchange="renderPublicEntries()"><option value="">All Gender</option><option>Male</option><option>Female</option></select></div><div style="flex:1"><label>Event</label><select id="fEvent" onchange="renderPublicEntries()"><option value="">All Events</option></select></div></div>
-<button style="background:#64748b;width:100%" onclick="clearFilters()">🔄 Clear All Filters</button><p id="filterMsg" style="text-align:center;font-weight:bold;color:#0b5cff"></p>
+<button style="background:#64748b;width:100%" onclick="clearFilters()">🔄 Clear All Filters</button><button style="background:#16a34a;width:100%" onclick="syncFromCloud()">☁️ Refresh From Cloud</button><p id="filterMsg" style="text-align:center;font-weight:bold;color:#0b5cff"></p>
 </div>
 <div id="entriesList"></div>
 <button style="background:#0b5cff;width:100%" onclick="location.href=location.origin+location.pathname+'?public=1'">📝 Click Here to Submit New Entry</button>
 </div>
 
-<!-- PUBLIC ENTRY -->
 <div class="box hidden" id="publicBox">
 <h2 style="text-align:center">🏆 Tamil Nadu State Meet 2026</h2>
 <p style="text-align:center">17 to 19 Dec 2026 - Chennai<br><b>📝 Public Entry Form</b></p>
-<button style="background:#7c3aed;width:100%" onclick="showEntriesPage()">📋 View Total Entries</button>
-<hr>
+<p id="cloudStatus2" style="text-align:center;font-size:12px;color:#16a34a"></p>
+<button style="background:#7c3aed;width:100%" onclick="showEntriesPage()">📋 View Total Entries</button><hr>
 <h3>📥📤 Bulk Entry - For Schools / Clubs</h3>
 <div style="background:#ede9fe;padding:14px;border-radius:10px">
 <button style="background:#7c3aed;width:100%" onclick="downloadBulkTemplate()">📥 Download Bulk Entry Template - Excel</button>
 <p style="font-size:12px;text-align:center">Download Template, Fill It, Then Upload Below!</p>
 <label>📤 Bulk Entry Upload</label><input type="file" accept=".xlsx,.xls,.csv" onchange="uploadBulkEntryPublic(event)">
-</div>
-<hr>
+</div><hr>
 <label>Meet *</label><select id="pMeet" onchange="fillPublicEvents()"></select>
 <label>Player Name *</label><input id="pName" placeholder="Player Full Name">
 <label>Phone *</label><input id="pPhone" placeholder="Phone Number">
@@ -74,36 +69,22 @@ label{font-size:12px;font-weight:bold}
 <label>Age Group - Auto Calculated ✅</label><select id="pAge" disabled style="background:#f1f5f9"><option>Under 14</option><option>Under 16</option><option>Under 18</option><option>Under 20</option><option>Open</option></select>
 <label>Gender</label><select id="pGender"><option>Male</option><option>Female</option></select>
 <label>School / Club</label><input id="pSchool" placeholder="School / Club Name">
-
-<!-- ✅ NEW: SELECT EVENTS AT A TIME - CHECKBOX -->
 <label style="font-size:14px;color:#0b5cff">🏅 SELECT EVENTS - Tick 2 or 3 Events At A Time! (Max 5)</label>
-<p style="font-size:12px;color:#64748b;margin:2px">👆 Tick the Boxes Below - You Can Select 2 Events, 3 Events, or Up to 5 Events Together!</p>
+<p style="font-size:12px;color:#64748b;margin:2px">👆 Tick the Boxes Below - You Can Select 2, 3, or Up to 5 Events Together!</p>
 <div id="pEventGrid" class="evGrid"></div>
 <p id="pSelected" style="font-weight:bold;color:#16a34a">Selected: None (0/5)</p>
 <button style="background:#64748b" onclick="clearPublicEvents()">🔄 Clear All Events</button>
-
-<div class="feeBox" style="margin-top:10px">
-<span>💰 ENTRY FEE</span><br>
-<span style="font-size:13px">Per Event: Rs. <b id="pFeePer">100</b> /- | Events Selected: <b id="pFeeCount">0</b></span><br>
-<span style="font-size:28px;font-weight:bold;color:#15803d">Total Payable: Rs. <span id="pFeeTotal">0</span> /-</span><br>
-<span style="font-size:12px;color:#64748b" id="pFeeNote">Tick Events Above to See Total Fee</span>
-</div>
-<div class="qrBox" style="margin-top:12px">
-<h3 style="margin:4px">📱 Scan QR Code & Pay</h3>
-<div id="pQrWrap"><p style="color:#64748b">QR Code Will Appear Here After Admin Uploads It</p></div>
-<p style="font-size:12px">Pay Total Fee Using This QR Code - Then Fill Payment Details Below</p>
-</div>
-<label>💳 Payment Details - UTR / Transaction ID *</label><input id="pPayId" placeholder="Ex: UTR 123456789012 / GPay Transaction ID">
+<div class="feeBox" style="margin-top:10px"><span>💰 ENTRY FEE</span><br><span style="font-size:13px">Per Event: Rs. <b id="pFeePer">100</b> /- | Events Selected: <b id="pFeeCount">0</b></span><br><span style="font-size:28px;font-weight:bold;color:#15803d">Total Payable: Rs. <span id="pFeeTotal">0</span> /-</span><br><span style="font-size:12px;color:#64748b" id="pFeeNote">Tick Events Above to See Total Fee</span></div>
+<div class="qrBox" style="margin-top:12px"><h3 style="margin:4px">📱 Scan QR Code & Pay</h3><div id="pQrWrap"><p style="color:#64748b">QR Code Will Appear Here After Admin Uploads It</p></div><p style="font-size:12px">Pay Total Fee Using This QR Code - Then Fill Payment Details Below</p></div>
+<label>💳 Payment Details - UTR / Transaction ID *</label><input id="pPayId" placeholder="Ex: UTR 123456789012">
 <label>💳 Payment Mode</label><select id="pPayMode"><option>GPay</option><option>PhonePe</option><option>Paytm</option><option>UPI</option><option>Bank Transfer</option><option>Cash</option></select>
-<label>📎 Upload Payment Screenshot / Proof *</label><input type="file" accept="image/*,.pdf" onchange="uploadPayProof(event)"><div id="pPayPreview" style="font-size:12px;color:green"></div>
+<label>📎 Upload Payment Screenshot *</label><input type="file" accept="image/*,.pdf" onchange="uploadPayProof(event)"><div id="pPayPreview" style="font-size:12px;color:green"></div>
 <label>📄 Upload Bonafide Certificate *</label><input type="file" accept="image/*,.pdf" onchange="uploadBonafide(event)"><div id="pBonaPreview" style="font-size:12px;color:green"></div>
-<p style="font-size:12px;color:#dc2626">⚠️ Payment Screenshot + Bonafide Certificate Compulsory</p>
 <button style="background:#0b5cff;width:100%;font-size:16px;padding:14px" onclick="savePublicEntry()">✅ Submit My Entry</button>
 <p id="pMsg" style="color:green;text-align:center;font-weight:bold"></p>
 <button style="background:#7c3aed;width:100%" onclick="showEntriesPage()">📋 Check If My Entry Has Arrived</button>
 </div>
 
-<!-- LOGIN -->
 <div class="box" id="loginBox">
 <h2 style="text-align:center">🏆 Tamil Nadu State Meet 2026</h2><p style="text-align:center">17 to 19 Dec 2026 - Chennai</p>
 <h3 style="text-align:center">🔐 Staff Login</h3>
@@ -114,47 +95,51 @@ label{font-size:12px;font-weight:bold}
 <p id="loginErr" style="color:red;text-align:center"></p>
 </div>
 
-<!-- MAIN -->
 <div class="box hidden" id="mainBox">
 <p>👋 <b id="who"></b> | <b id="whoRole"></b> <button style="background:#64748b;float:right" onclick="logout()">Logout</button></p><hr>
 <div id="adminPanel" class="hidden">
 <h2>🛡️ Admin Panel</h2>
-<div style="background:#dcfce7;padding:12px;border-radius:10px">
-<b>🔗 PUBLIC LINKS:</b><br>
+<div style="background:#dcfce7;padding:12px;border-radius:10px"><b>🔗 PUBLIC LINKS:</b><br>
 <label>Entry Link</label><input readonly value="https://benjaymathews-sketch.github.io/blank-app/?public=1" onclick="this.select()" style="background:#fff">
 <label>Entries Check Link</label><input readonly value="https://benjaymathews-sketch.github.io/blank-app/?entries=1" onclick="this.select()" style="background:#fff">
 <button style="background:#16a34a;width:100%" onclick="copyPublicLink()">📋 Copy Entry Link</button>
 <button style="background:#7c3aed;width:100%" onclick="copyEntriesLink()">📋 Copy Entries Check Link</button>
 <button style="background:#25D366;width:100%" onclick="shareWhatsApp()">💬 Share on WhatsApp</button>
 </div>
+<!-- CLOUD SETTINGS -->
+<div style="background:#e0f2fe;padding:14px;border-radius:10px;margin-top:12px">
+<h3>☁️ Cloud Sync - IMPORTANT - Admin Phone la Maathina Vera Phone-layum Theriyanumna Idhu Venum!</h3>
+<label>☁️ Google Apps Script Web App URL - Paste Here (One Time Only)</label><input id="adminCloudUrl" placeholder="https://script.google.com/macros/s/XXXX/exec">
+<button style="background:#0284c7;width:100%" onclick="saveCloudUrl()">✅ Save Cloud URL</button>
+<p style="font-size:12px">Cloud URL Illana - Data Local Mattum Dhan - Vera Phone la Theriyadhu! Cloud URL Pottadhum Ella Phone-layum Same Data Varum!</p>
+<button style="background:#16a34a;width:100%" onclick="syncFromCloud()">☁️ Sync Now From Cloud</button>
+<button style="background:#7c3aed;width:100%" onclick="exportAllData()">📥 Export All Data - Backup File Download</button>
+<label>📤 Import Backup File</label><input type="file" accept=".json" onchange="importAllData(event)">
+<p id="cloudSaveMsg" style="color:green;text-align:center"></p>
+</div>
 <div style="background:#fef3c7;padding:14px;border-radius:10px;margin-top:12px">
 <h3>💰 Entry Fee + QR Code - Admin Can Change Any Time</h3>
-<label>💰 Entry Fee - Per Event (Rs.) - Default Rs.100</label><input id="adminFee" type="number" value="100" min="0" placeholder="Ex: 100">
-<p style="font-size:12px">Ex: Fee Rs.100 na - 2 Events = Rs.200, 3 Events = Rs.300</p>
-<label>📱 Upload QR Code for Payment - Change Any Time</label><input type="file" accept="image/*" onchange="uploadQR(event)">
-<div id="qrPreview"></div>
-<label>UPI ID / Payee Name</label><input id="adminUpi" placeholder="Ex: tnmeet@okaxis / Tamil Nadu Association">
-<button style="background:#d97706;width:100%" onclick="saveFeeQR()">✅ Save Entry Fee + QR Code</button>
+<label>💰 Entry Fee - Per Event (Rs.) - Default Rs.100</label><input id="adminFee" type="number" value="100" min="0">
+<label>📱 Upload QR Code - Change Any Time</label><input type="file" accept="image/*" onchange="uploadQR(event)"><div id="qrPreview"></div>
+<label>UPI ID / Payee Name</label><input id="adminUpi" placeholder="Ex: tnmeet@okaxis">
+<button style="background:#d97706;width:100%" onclick="saveFeeQR()">✅ Save Entry Fee + QR Code - To Cloud + Local</button>
 <p id="feeSaveMsg" style="color:green;text-align:center"></p>
 </div>
-<div style="background:#e0e7ff;padding:12px;border-radius:10px;margin-top:10px"><b>📊 TOTAL ENTRIES:</b> <b id="adminTotal" style="font-size:22px;color:#0b5cff">0</b> | <b>💰 Total Collection: Rs. <span id="adminTotalFee">0</span>/-</b><br><span id="adminTotalBreak"></span><br><button style="background:#7c3aed;width:100%" onclick="showEntriesPageAdmin()">📋 View Entries with Filters</button></div>
+<div style="background:#e0e7ff;padding:12px;border-radius:10px;margin-top:10px"><b>📊 TOTAL ENTRIES:</b> <b id="adminTotal" style="font-size:22px;color:#0b5cff">0</b> | <b>💰 Total: Rs. <span id="adminTotalFee">0</span>/-</b><br><span id="adminTotalBreak"></span><br><button style="background:#7c3aed;width:100%" onclick="showEntriesPageAdmin()">📋 View Entries</button></div>
 <h3>📅 Age Group - Cut-off + Custom Range</h3>
 <div style="background:#fef3c7;padding:14px;border-radius:10px">
 <label>✂️ Cut-off Date</label><input id="adminCutoff" type="date" value="2026-12-31">
-<label>Under 14 - DOB Range</label><div style="display:flex;gap:5px"><input id="u14From" type="date" value="2013-01-01"><input id="u14To" type="date" value="2014-12-31"></div>
-<label>Under 16 - DOB Range</label><div style="display:flex;gap:5px"><input id="u16From" type="date" value="2011-01-01"><input id="u16To" type="date" value="2012-12-31"></div>
-<label>Under 18 - DOB Range</label><div style="display:flex;gap:5px"><input id="u18From" type="date" value="2009-01-01"><input id="u18To" type="date" value="2010-12-31"></div>
-<label>Under 20 - DOB Range</label><div style="display:flex;gap:5px"><input id="u20From" type="date" value="2007-01-01"><input id="u20To" type="date" value="2008-12-31"></div>
-<label>Open - DOB Range</label><div style="display:flex;gap:5px"><input id="openFrom" type="date" value="1900-01-01"><input id="openTo" type="date" value="2006-12-31"></div>
+<label>Under 14</label><div style="display:flex;gap:5px"><input id="u14From" type="date" value="2013-01-01"><input id="u14To" type="date" value="2014-12-31"></div>
+<label>Under 16</label><div style="display:flex;gap:5px"><input id="u16From" type="date" value="2011-01-01"><input id="u16To" type="date" value="2012-12-31"></div>
+<label>Under 18</label><div style="display:flex;gap:5px"><input id="u18From" type="date" value="2009-01-01"><input id="u18To" type="date" value="2010-12-31"></div>
+<label>Under 20</label><div style="display:flex;gap:5px"><input id="u20From" type="date" value="2007-01-01"><input id="u20To" type="date" value="2008-12-31"></div>
+<label>Open</label><div style="display:flex;gap:5px"><input id="openFrom" type="date" value="1900-01-01"><input id="openTo" type="date" value="2006-12-31"></div>
 <button style="background:#d97706;width:100%" onclick="saveAgeSettings()">✅ Save Cut-off + Age Groups</button><p id="ageSetMsg" style="color:green;text-align:center"></p>
 </div>
-<h3>1. Meet Control</h3>
-<label>Enabled Meet</label><select id="adminMeetCtrl"><option value="Both">Both</option><option value="Athletics">Athletics Only</option><option value="Swimming">Swimming Only</option></select>
-<label>Common Start Time</label><input id="commonStart" type="time" value="09:00">
-<label>Lanes</label><select id="laneCount"><option value="6">6 Lanes</option><option value="8" selected>8 Lanes</option></select>
+<h3>1. Meet Control</h3><label>Enabled Meet</label><select id="adminMeetCtrl"><option value="Both">Both</option><option value="Athletics">Athletics Only</option><option value="Swimming">Swimming Only</option></select>
+<label>Common Start Time</label><input id="commonStart" type="time" value="09:00"><label>Lanes</label><select id="laneCount"><option value="6">6 Lanes</option><option value="8" selected>8 Lanes</option></select>
 <button style="background:#0b5cff" onclick="saveAdminSettings()">✅ Save Settings</button><p id="adminSetMsg" style="color:green"></p>
-<h3>2. Create User</h3>
-<input id="newUid" placeholder="New User ID"><input id="newUpass" placeholder="New Password">
+<h3>2. Create User</h3><input id="newUid" placeholder="New User ID"><input id="newUpass" placeholder="New Password">
 <select id="newRole"><option value="entry">Entry Staff</option><option value="official">Official</option><option value="startref">Starting Referee</option><option value="finishref">Finishing Referee</option><option value="admin">Admin</option></select>
 <select id="newMeet"><option>Athletics</option><option>Swimming</option><option>Both</option></select>
 <button style="background:#16a34a;width:100%" onclick="createUser()">✅ Create User</button><div id="userList"></div>
@@ -163,11 +148,10 @@ label{font-size:12px;font-weight:bold}
 <label>Meet</label><select id="newEventMeet"><option>Athletics</option><option>Swimming</option></select>
 <label>New Event Name</label><input id="newEventName" placeholder="Ex: 4x100m Relay">
 <button style="background:#16a34a;width:100%" onclick="addNewEvent()">➕ Add Event</button>
-<h4>Athletics Events</h4><div id="athEventList"></div>
-<h4>Swimming Events - Relay Included</h4><div id="swmEventList"></div>
+<h4>Athletics</h4><div id="athEventList"></div><h4>Swimming - Relay Included</h4><div id="swmEventList"></div>
 <button style="background:#64748b;width:100%" onclick="resetEvents()">🔄 Reset to Default Events</button>
 </div>
-<h3>🧪 ADMIN TEST - Start / Stop</h3>
+<h3>🧪 ADMIN TEST</h3>
 <div style="background:#fee2e2;padding:14px;border-radius:10px">
 <select id="adminTestEvent"><option>100m Freestyle</option><option>50m Freestyle</option><option>100m</option><option>200m</option></select>
 <div style="font-size:32px;font-weight:bold;text-align:center;color:#dc2626;background:#fff;padding:10px;border-radius:10px" id="adminTestTimer">00:00.00</div>
@@ -187,16 +171,13 @@ label{font-size:12px;font-weight:bold}
 <label>Sub Text</label><input id="certSub" value="This is to certify that">
 <label>Footer Line 1</label><input id="certF1" value="Chennai - Tamil Nadu">
 <label>Footer Line 2</label><input id="certF2" value="www.tnmeet2026.com">
-<label>Signature 1</label><input id="certS1" value="Starting Referee">
-<label>Signature 2</label><input id="certS2" value="Finishing Referee">
-<label>Signature 3</label><input id="certS3" value="General Secretary">
+<label>Signature 1</label><input id="certS1" value="Starting Referee"><label>Signature 2</label><input id="certS2" value="Finishing Referee"><label>Signature 3</label><input id="certS3" value="General Secretary">
 <label>Background Colour</label><select id="certBg"><option value="#fffbeb">Light Yellow</option><option value="#eff6ff">Light Blue</option><option value="#f0fdf4">Light Green</option><option value="#ffffff">White</option></select>
 <button style="background:#b45309;width:100%" onclick="saveCertTemplate()">✅ Save Certificate Template</button>
 <button style="background:#64748b;width:100%" onclick="previewCert()">👁️ Preview Certificate</button><p id="certSaveMsg" style="color:green;text-align:center"></p>
 </div>
-<h3>5. Order of Events - Excel / PDF</h3>
-<input type="file" accept=".xlsx,.xls,.csv" onchange="uploadOrderExcel(event)"><input type="file" accept=".pdf" onchange="uploadOrderPdf(event)"><div id="orderList"></div>
-<h3>6. All Entries - Filter + Total + Payment + Bonafide</h3>
+<h3>5. Order of Events</h3><input type="file" accept=".xlsx,.xls,.csv" onchange="uploadOrderExcel(event)"><input type="file" accept=".pdf" onchange="uploadOrderPdf(event)"><div id="orderList"></div>
+<h3>6. All Entries</h3>
 <div style="background:#f1f5f9;padding:12px;border-radius:10px">
 <label>Filter - Age</label><select id="aFage" onchange="renderAll()"><option value="">All Age</option><option>Under 14</option><option>Under 16</option><option>Under 18</option><option>Under 20</option><option>Open</option></select>
 <label>Filter - Gender</label><select id="aFgender" onchange="renderAll()"><option value="">All Gender</option><option>Male</option><option>Female</option></select>
@@ -206,61 +187,41 @@ label{font-size:12px;font-weight:bold}
 </div>
 <div id="entryPanel" class="hidden">
 <h2>📝 Entry Form - Staff</h2><p>Allotted Meet: <b id="entryMeetInfo"></b></p>
-<div style="background:#ede9fe;padding:12px;border-radius:10px">
-<button style="background:#7c3aed;width:100%" onclick="downloadBulkTemplate()">📥 Download Bulk Entry Template - Excel</button>
-<p style="font-size:12px;text-align:center">Download Template, Fill It, Then Upload Below</p>
-<label>📤 Bulk Entry Upload</label><input type="file" accept=".xlsx,.xls,.csv" onchange="uploadBulkEntry(event)">
-</div>
+<div style="background:#ede9fe;padding:12px;border-radius:10px"><button style="background:#7c3aed;width:100%" onclick="downloadBulkTemplate()">📥 Download Bulk Entry Template - Excel</button><label>📤 Bulk Entry Upload</label><input type="file" accept=".xlsx,.xls,.csv" onchange="uploadBulkEntry(event)"></div>
 <label>Meet *</label><select id="eMeet" onchange="fillEvents()"></select>
 <input id="eName" placeholder="Player Name *"><input id="ePhone" placeholder="Phone"><input id="eDistrict" placeholder="District"><label>Date of Birth *</label><input id="eDob" type="date" onchange="onDobChangeStaff()">
-<label>Age Group - Auto Calculated</label><select id="eAge" disabled style="background:#f1f5f9"><option>Under 14</option><option>Under 16</option><option>Under 18</option><option>Under 20</option><option>Open</option></select>
+<label>Age Group - Auto</label><select id="eAge" disabled style="background:#f1f5f9"><option>Under 14</option><option>Under 16</option><option>Under 18</option><option>Under 20</option><option>Open</option></select>
 <select id="eGender"><option>Male</option><option>Female</option></select>
-<!-- STAFF ALSO CHECKBOX -->
-<label style="font-size:14px;color:#0b5cff">🏅 SELECT EVENTS - Tick 2 or 3 Events At A Time! (Max 5)</label>
-<div id="eEventGrid" class="evGrid"></div>
-<p id="eSelected" style="font-weight:bold;color:#16a34a">Selected: None (0/5)</p>
-<button style="background:#64748b" onclick="clearStaffEvents()">🔄 Clear All Events</button>
+<label style="font-size:14px;color:#0b5cff">🏅 SELECT EVENTS - Tick 2 or 3 At A Time! (Max 5)</label><div id="eEventGrid" class="evGrid"></div>
+<p id="eSelected" style="font-weight:bold;color:#16a34a">Selected: None (0/5)</p><button style="background:#64748b" onclick="clearStaffEvents()">🔄 Clear All Events</button>
 <div class="feeBox" style="margin-top:10px"><span>💰 ENTRY FEE</span><br>Per Event: Rs. <b id="eFeePer">100</b> | Events: <b id="eFeeCount">0</b><br><span style="font-size:22px;font-weight:bold;color:#15803d">Total: Rs. <span id="eFeeTotal">0</span>/-</span></div>
-<label>💳 Payment UTR / Transaction ID</label><input id="ePayId" placeholder="UTR / Transaction ID">
-<label>💳 Payment Mode</label><select id="ePayMode"><option>GPay</option><option>PhonePe</option><option>Paytm</option><option>UPI</option><option>Bank Transfer</option><option>Cash</option></select>
+<label>💳 Payment UTR</label><input id="ePayId" placeholder="UTR"><label>💳 Payment Mode</label><select id="ePayMode"><option>GPay</option><option>PhonePe</option><option>Paytm</option><option>UPI</option><option>Bank Transfer</option><option>Cash</option></select>
 <button style="background:#0b5cff;width:100%" onclick="saveEntry()">✅ Submit Entry</button><p id="eMsg" style="color:green;text-align:center"></p><div id="myEntries"></div>
 </div>
-<div id="officialPanel" class="hidden">
-<h2>📋 Official Panel</h2><p>Common Start: <b id="offCommonStart"></b> | Lanes: <b id="offLanes"></b></p><div id="offOrder"></div>
-<select id="schEvent"></select><input id="schDate" type="date" value="2026-12-17"><input id="schStart" type="time" value="09:00"><input id="schEnd" type="time" value="10:00"><input id="schOfficial" placeholder="Official Name"><button style="background:#16a34a;width:100%" onclick="saveSchedule()">✅ Save Schedule</button><div id="offSchedule"></div><div id="offPlayers"></div>
-</div>
-<div id="startPanel" class="hidden">
-<h2>🚦 Starting Referee - LIVE</h2><select id="liveEventSel"></select><select id="liveHeat"><option>Heat 1</option><option>Heat 2</option><option>Heat 3</option><option>Heat 4</option></select>
-<div id="liveStatus" style="text-align:center;font-weight:bold;margin:10px"></div><div class="bigTimer" id="starterTimer">00:00.00</div>
-<button style="background:#dc2626;width:100%;font-size:18px;padding:16px" onclick="starterStart()">🚦 START RACE</button>
-<button style="background:#64748b;width:100%" onclick="starterReset()">🔄 RESET Race</button><div id="startList"></div>
-</div>
-<div id="finishPanel" class="hidden">
-<h2>🏁 Finishing Referee - LIVE</h2><div id="finishLiveInfo" style="text-align:center;font-weight:bold"></div><div class="bigTimer" id="finishTimer">Waiting for Starter... ⏳</div>
-<div id="finishList"></div><h3>🏆 Auto Results</h3><div id="finishResults"></div>
-</div>
+<div id="officialPanel" class="hidden"><h2>📋 Official Panel</h2><p>Common Start: <b id="offCommonStart"></b> | Lanes: <b id="offLanes"></b></p><div id="offOrder"></div><select id="schEvent"></select><input id="schDate" type="date" value="2026-12-17"><input id="schStart" type="time" value="09:00"><input id="schEnd" type="time" value="10:00"><input id="schOfficial" placeholder="Official Name"><button style="background:#16a34a;width:100%" onclick="saveSchedule()">✅ Save Schedule</button><div id="offSchedule"></div><div id="offPlayers"></div></div>
+<div id="startPanel" class="hidden"><h2>🚦 Starting Referee - LIVE</h2><select id="liveEventSel"></select><select id="liveHeat"><option>Heat 1</option><option>Heat 2</option><option>Heat 3</option><option>Heat 4</option></select><div id="liveStatus" style="text-align:center;font-weight:bold;margin:10px"></div><div class="bigTimer" id="starterTimer">00:00.00</div><button style="background:#dc2626;width:100%;font-size:18px;padding:16px" onclick="starterStart()">🚦 START RACE</button><button style="background:#64748b;width:100%" onclick="starterReset()">🔄 RESET Race</button><div id="startList"></div></div>
+<div id="finishPanel" class="hidden"><h2>🏁 Finishing Referee - LIVE</h2><div id="finishLiveInfo" style="text-align:center;font-weight:bold"></div><div class="bigTimer" id="finishTimer">Waiting for Starter... ⏳</div><div id="finishList"></div><h3>🏆 Auto Results</h3><div id="finishResults"></div></div>
 <div id="certPanel" class="hidden"><h2>🎓 Certificates</h2><div id="certList"></div></div>
 </div>
 
 <div id="printCert" class="cert hidden">
 <img id="cLogo" src="" style="display:none">
 <h2 id="pH1" style="margin:4px;color:#92400e"></h2><p id="pH2" style="margin:2px"></p><p id="pH3" style="margin:2px;color:#64748b"></p><hr>
-<h1 id="pTitle" style="color:#92400e"></h1><p id="pSub"></p>
-<h2 id="cName" style="font-size:34px;margin:8px"></h2>
-<p>has secured</p><h2 id="cPlace" style="color:#dc2626;margin:6px"></h2>
-<p>in the event of</p><h3 id="cEvent" style="margin:6px"></h3>
+<h1 id="pTitle" style="color:#92400e"></h1><p id="pSub"></p><h2 id="cName" style="font-size:34px;margin:8px"></h2><p>has secured</p><h2 id="cPlace" style="color:#dc2626;margin:6px"></h2><p>in the event of</p><h3 id="cEvent" style="margin:6px"></h3>
 <table style="margin:12px auto;border-collapse:collapse"><tr><td style="border:1px solid #ddd;padding:10px"><b>Gender</b><br><span id="cGender"></span></td><td style="border:1px solid #ddd;padding:10px"><b>Time</b><br><span id="cTime" style="color:#0b5cff;font-weight:bold"></span></td><td style="border:1px solid #ddd;padding:10px"><b>District</b><br><span id="cDistrict"></span></td></tr></table>
 <p id="pF1" style="margin:2px"></p><p id="pF2" style="margin:2px;font-size:12px;color:#64748b"></p><br>
 <table style="width:100%;border:0"><tr><td style="border:0">___________<br><span id="pS1"></span></td><td style="border:0">___________<br><span id="pS2"></span></td><td style="border:0">___________<br><span id="pS3"></span></td></tr></table><br>
 <button onclick="window.print()" style="background:#16a34a">🖨️ Print Certificate</button> <button onclick="document.getElementById('printCert').classList.add('hidden')" style="background:#64748b">Close</button>
 </div>
-
-<div id="imgModal" class="hidden" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:999;text-align:center;padding:20px;box-sizing:border-box">
-<img id="modalImg" src="" style="max-width:95%;max-height:80%;margin-top:20px;border-radius:10px;background:#fff">
-<br><button style="background:#dc2626;margin-top:10px" onclick="document.getElementById('imgModal').classList.add('hidden')">✖ Close</button>
-</div>
+<div id="imgModal" class="hidden" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:999;text-align:center;padding:20px;box-sizing:border-box"><img id="modalImg" src="" style="max-width:95%;max-height:80%;margin-top:20px;border-radius:10px;background:#fff"><br><button style="background:#dc2626;margin-top:10px" onclick="document.getElementById('imgModal').classList.add('hidden')">✖ Close</button></div>
 
 <script>
+// ===== ⚠️ STEP 3: INGA UNGA GOOGLE APPS SCRIPT URL-A PASTE PANNUNGA =====
+// Example: let CLOUD_URL = "https://script.google.com/macros/s/ABC123/exec";
+let CLOUD_URL = ""; 
+// Admin Panel la URL Type Panna Kooda Idhu Auto Fill Aagum - LocalStorage la Save Aagum
+if(localStorage.getItem('tn_cloud_url')) CLOUD_URL = localStorage.getItem('tn_cloud_url');
+
 let cur=null, selEvents=[], pubEvents=[], curLang='en', tempPayProof='', tempBonafide='', tempQR='';
 function setLang(l){curLang=l;localStorage.setItem('tn_lang',l);document.getElementById('langShow').innerText = l=='ta' ? ' | Current: தமிழ்' : ' | Current: English';document.querySelectorAll('[data-en]').forEach(el=>{el.innerText = l=='ta' ? (el.getAttribute('data-ta')||el.getAttribute('data-en')) : el.getAttribute('data-en');});}
 function get(k,d){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d));}catch(e){return d;}}
@@ -271,79 +232,81 @@ function certTpl(){return get('tn_cert',{h1:'TAMIL NADU STATE MEET 2026',h2:'Tam
 function getEvents(){let s=JSON.parse(localStorage.getItem('tn_events')||'null');if(s)return s;return{Athletics:["100m","200m","400m","800m","1500m","Long Jump","High Jump","Shot Put","Discus Throw","Javelin Throw"],Swimming:["50m Freestyle","100m Freestyle","200m Freestyle","50m Backstroke","100m Backstroke","50m Breaststroke","100m Breaststroke","50m Butterfly","100m Butterfly","200m Individual Medley","4x25m Freestyle Relay","4x50m Freestyle Relay","4x25m Medley Relay","4x50m Medley Relay","4x25m Mixed Relay","4x50m Mixed Relay"]};}
 function show(id,yes){document.getElementById(id).classList.toggle('hidden',!yes);}
 function fmt(ms){if(ms<0)ms=0;let m=Math.floor(ms/60000);let s=Math.floor((ms%60000)/1000);let cs=Math.floor((ms%1000)/10);return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+'.'+String(cs).padStart(2,'0');}
-// === CHECKBOX EVENT SELECTION - SELECT 2 OR 3 AT A TIME ===
-function renderPublicEventGrid(){
-  let m=document.getElementById('pMeet').value;
-  let arr=getEvents()[m]||[];
-  let grid=document.getElementById('pEventGrid');
-  let h='';
-  arr.forEach((ev,i)=>{
-    let checked=pubEvents.includes(ev)?'checked':'';
-    let cls=pubEvents.includes(ev)?'evItem checked':'evItem';
-    h+='<label class="'+cls+'" onclick="togglePublicEvent(event,\''+ev.replace(/'/g,"")+'\')"><input type="checkbox" '+checked+' onchange="togglePublicEvent2(\''+ev.replace(/'/g,"")+'\',this.checked)"> '+ev+'</label>';
-  });
-  grid.innerHTML=h||'<p>No Events</p>';
+
+// ===== CLOUD SYNC - GOOGLE SHEET =====
+function saveCloudUrl(){let u=document.getElementById('adminCloudUrl').value.trim();if(!u){alert('Please Paste Cloud URL');return;}CLOUD_URL=u;localStorage.setItem('tn_cloud_url',u);document.getElementById('cloudSaveMsg').innerText='✅ Cloud URL Saved! Ippo Ella Phone-layum Same Data Varum!';alert('✅ Cloud URL Saved! Now Sync From Cloud');syncFromCloud();}
+function updateCloudStatus(){let msg=CLOUD_URL?'☁️ Cloud Connected - Data Will Sync To All Phones':'⚠️ Cloud NOT Connected - Data Only On This Phone - Admin Panel la Cloud URL Podunga';let a=document.getElementById('cloudStatus');if(a)a.innerText=msg;let b=document.getElementById('cloudStatus2');if(b)b.innerText=msg;}
+async function syncFromCloud(){
+  updateCloudStatus();
+  if(!CLOUD_URL){return;}
+  try{
+    let r=await fetch(CLOUD_URL);
+    let j=await r.json();
+    if(j.entries){ set('tn_entries', j.entries.map(e=>({...e, source:e.source||'CLOUD', time:e.time||''}))); }
+    if(j.settings){ set('tn_fee_qr',{fee:parseInt(j.settings.fee)||100, qr:j.settings.qr||'', upi:j.settings.upi||''}); }
+    loadFeeQR(); updateFeeDisplay(); renderPublicEntries(); if(document.getElementById('adminTotal')) renderAll();
+    let s=document.getElementById('cloudStatus'); if(s) s.innerText='☁️ Cloud Synced ✅ - '+ (j.entries||[]).length +' Entries';
+  }catch(e){ console.log('Cloud Sync Failed',e); }
 }
-function togglePublicEvent(e,ev){
-  // label click already toggles checkbox - we handle via checkbox onchange, prevent double
-  // do nothing, checkbox onchange will fire
+async function cloudPost(data){
+  if(!CLOUD_URL) return;
+  try{ await fetch(CLOUD_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}); }catch(e){ console.log(e); }
 }
-function togglePublicEvent2(ev,checked){
-  if(checked){
-    if(pubEvents.length>=5){alert('Max 5 Events Only!');renderPublicEventGrid();return;}
-    if(!pubEvents.includes(ev))pubEvents.push(ev);
-  }else{
-    pubEvents=pubEvents.filter(x=>x!==ev);
-  }
-  document.getElementById('pSelected').innerText='Selected: '+(pubEvents.length?pubEvents.join(', '):'None')+' ('+pubEvents.length+'/5)';
-  renderPublicEventGrid();
-  updateFeeDisplay();
+function exportAllData(){
+  let data={entries:get('tn_entries',[]),fee_qr:feeSettings(),settings:settings(),events:getEvents(),exported:new Date().toLocaleString()};
+  let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='TN_Meet_Backup_'+new Date().toISOString().slice(0,10)+'.json'; a.click();
+  alert('✅ Backup Downloaded! Idha Vera Phone la Import Panna Mudiyum!');
 }
+function importAllData(e){
+  let f=e.target.files[0]; if(!f) return;
+  let r=new FileReader(); r.onload=function(ev){
+    try{
+      let d=JSON.parse(ev.target.result);
+      if(d.entries) set('tn_entries', d.entries);
+      if(d.fee_qr) set('tn_fee_qr', d.fee_qr);
+      if(d.settings) set('tn_settings', d.settings);
+      alert('✅ Import Done! '+(d.entries||[]).length+' Entries Restored!');
+      loadFeeQR(); renderAll(); renderPublicEntries();
+    }catch(err){ alert('Invalid Backup File'); }
+  }; r.readAsText(f);
+}
+
+// CHECKBOX EVENTS
+function renderPublicEventGrid(){let m=document.getElementById('pMeet').value;let arr=getEvents()[m]||[];let grid=document.getElementById('pEventGrid');let h='';arr.forEach((ev)=>{let checked=pubEvents.includes(ev)?'checked':'';let cls=pubEvents.includes(ev)?'evItem checked':'evItem';h+='<label class="'+cls+'"><input type="checkbox" '+checked+' onchange="togglePublicEvent2(\''+ev.replace(/'/g,"")+'\',this.checked)"> '+ev+'</label>';});grid.innerHTML=h||'<p>No Events</p>';}
+function togglePublicEvent2(ev,checked){if(checked){if(pubEvents.length>=5){alert('Max 5 Events Only!');renderPublicEventGrid();return;}if(!pubEvents.includes(ev))pubEvents.push(ev);}else{pubEvents=pubEvents.filter(x=>x!==ev);}document.getElementById('pSelected').innerText='Selected: '+(pubEvents.length?pubEvents.join(', '):'None')+' ('+pubEvents.length+'/5)';renderPublicEventGrid();updateFeeDisplay();}
 function clearPublicEvents(){pubEvents=[];document.getElementById('pSelected').innerText='Selected: None (0/5)';renderPublicEventGrid();updateFeeDisplay();}
-function renderStaffEventGrid(){
-  let m=document.getElementById('eMeet').value;
-  let arr=getEvents()[m]||[];
-  let grid=document.getElementById('eEventGrid');
-  let h='';
-  arr.forEach((ev)=>{
-    let checked=selEvents.includes(ev)?'checked':'';
-    let cls=selEvents.includes(ev)?'evItem checked':'evItem';
-    h+='<label class="'+cls+'"><input type="checkbox" '+checked+' onchange="toggleStaffEvent2(\''+ev.replace(/'/g,"")+'\',this.checked)"> '+ev+'</label>';
-  });
-  grid.innerHTML=h||'<p>No Events</p>';
-}
-function toggleStaffEvent2(ev,checked){
-  if(checked){
-    if(selEvents.length>=5){alert('Max 5 Events Only!');renderStaffEventGrid();return;}
-    if(!selEvents.includes(ev))selEvents.push(ev);
-  }else{
-    selEvents=selEvents.filter(x=>x!==ev);
-  }
-  document.getElementById('eSelected').innerText='Selected: '+(selEvents.length?selEvents.join(', '):'None')+' ('+selEvents.length+'/5)';
-  renderStaffEventGrid();
-  updateFeeDisplay();
-}
+function renderStaffEventGrid(){let m=document.getElementById('eMeet').value;let arr=getEvents()[m]||[];let grid=document.getElementById('eEventGrid');let h='';arr.forEach((ev)=>{let checked=selEvents.includes(ev)?'checked':'';let cls=selEvents.includes(ev)?'evItem checked':'evItem';h+='<label class="'+cls+'"><input type="checkbox" '+checked+' onchange="toggleStaffEvent2(\''+ev.replace(/'/g,"")+'\',this.checked)"> '+ev+'</label>';});grid.innerHTML=h||'<p>No Events</p>';}
+function toggleStaffEvent2(ev,checked){if(checked){if(selEvents.length>=5){alert('Max 5 Events Only!');renderStaffEventGrid();return;}if(!selEvents.includes(ev))selEvents.push(ev);}else{selEvents=selEvents.filter(x=>x!==ev);}document.getElementById('eSelected').innerText='Selected: '+(selEvents.length?selEvents.join(', '):'None')+' ('+selEvents.length+'/5)';renderStaffEventGrid();updateFeeDisplay();}
 function clearStaffEvents(){selEvents=[];document.getElementById('eSelected').innerText='Selected: None (0/5)';renderStaffEventGrid();updateFeeDisplay();}
-// FEE + QR
 function feeSettings(){return get('tn_fee_qr',{fee:100,qr:'',upi:''});}
-function saveFeeQR(){let f=parseInt(document.getElementById('adminFee').value)||100;let obj={fee:f,qr:tempQR||feeSettings().qr,upi:document.getElementById('adminUpi').value};set('tn_fee_qr',obj);document.getElementById('feeSaveMsg').innerText='✅ Saved! Fee Rs.'+f+'/- Per Event + QR Updated!';alert('✅ Saved! Fee: Rs.'+f+'/- Per Event');updateFeeDisplay();loadFeeQR();}
-function loadFeeQR(){let s=feeSettings();if(document.getElementById('adminFee'))document.getElementById('adminFee').value=s.fee;if(document.getElementById('adminUpi'))document.getElementById('adminUpi').value=s.upi||'';if(document.getElementById('qrPreview'))document.getElementById('qrPreview').innerHTML=s.qr?'<img src="'+s.qr+'" style="width:180px;border:2px solid #16a34a;border-radius:10px"><p>✅ QR Saved</p>':'<p>No QR Yet - Upload Pannunga</p>';if(document.getElementById('pQrWrap'))document.getElementById('pQrWrap').innerHTML=s.qr?'<img src="'+s.qr+'" style="width:220px;max-width:90%;border:3px solid #16a34a;border-radius:12px"><p style="font-weight:bold">'+(s.upi||'')+'</p>':'<p style="color:#64748b">QR Code Will Appear Here After Admin Uploads It</p>';updateFeeDisplay();}
+function saveFeeQR(){
+  let f=parseInt(document.getElementById('adminFee').value)||100;
+  let obj={fee:f,qr:tempQR||feeSettings().qr,upi:document.getElementById('adminUpi').value};
+  set('tn_fee_qr',obj);
+  // ☁️ Cloud-kkum Anuppu - Ella Phone-layum Maarum!
+  cloudPost({type:'settings',fee:f,qr:obj.qr,upi:obj.upi});
+  document.getElementById('feeSaveMsg').innerText='✅ Saved! Fee Rs.'+f+'/- + QR Saved To Cloud + Local!';
+  alert('✅ Saved To Cloud + Local!\nFee: Rs.'+f+'\nQR Updated!\n\nPublic Phone la Refresh Panna Pudhu QR Theriyum!');
+  updateFeeDisplay(); loadFeeQR();
+}
+function loadFeeQR(){let s=feeSettings();if(document.getElementById('adminFee'))document.getElementById('adminFee').value=s.fee;if(document.getElementById('adminUpi'))document.getElementById('adminUpi').value=s.upi||'';if(document.getElementById('adminCloudUrl'))document.getElementById('adminCloudUrl').value=CLOUD_URL||'';if(document.getElementById('qrPreview'))document.getElementById('qrPreview').innerHTML=s.qr?'<img src="'+s.qr+'" style="width:180px;border:2px solid #16a34a;border-radius:10px"><p>✅ QR Saved</p>':'<p>No QR Yet</p>';if(document.getElementById('pQrWrap'))document.getElementById('pQrWrap').innerHTML=s.qr?'<img src="'+s.qr+'" style="width:220px;max-width:90%;border:3px solid #16a34a;border-radius:12px"><p style="font-weight:bold">'+(s.upi||'')+'</p>':'<p style="color:#64748b">QR Code Will Appear Here After Admin Uploads It</p>';updateFeeDisplay();updateCloudStatus();}
 function uploadQR(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=function(ev){tempQR=ev.target.result;document.getElementById('qrPreview').innerHTML='<img src="'+tempQR+'" style="width:180px;border:2px solid #16a34a;border-radius:10px"><p style="color:green">✅ QR Selected - Press Save Button</p>';};r.readAsDataURL(f);}
-function updateFeeDisplay(){let fee=feeSettings().fee;if(document.getElementById('pFeePer'))document.getElementById('pFeePer').innerText=fee;if(document.getElementById('pFeeCount'))document.getElementById('pFeeCount').innerText=pubEvents.length;if(document.getElementById('pFeeTotal'))document.getElementById('pFeeTotal').innerText=pubEvents.length*fee;if(document.getElementById('pFeeNote'))document.getElementById('pFeeNote').innerText=pubEvents.length==0?'Tick Events Above to See Total Fee':pubEvents.length+' Events x Rs.'+fee+' = Rs.'+(pubEvents.length*fee)+'/- - Pay This Amount Using QR Code';if(document.getElementById('eFeePer'))document.getElementById('eFeePer').innerText=fee;if(document.getElementById('eFeeCount'))document.getElementById('eFeeCount').innerText=selEvents.length;if(document.getElementById('eFeeTotal'))document.getElementById('eFeeTotal').innerText=selEvents.length*fee;}
+function updateFeeDisplay(){let fee=feeSettings().fee;if(document.getElementById('pFeePer'))document.getElementById('pFeePer').innerText=fee;if(document.getElementById('pFeeCount'))document.getElementById('pFeeCount').innerText=pubEvents.length;if(document.getElementById('pFeeTotal'))document.getElementById('pFeeTotal').innerText=pubEvents.length*fee;if(document.getElementById('pFeeNote'))document.getElementById('pFeeNote').innerText=pubEvents.length==0?'Tick Events Above to See Total Fee':pubEvents.length+' Events x Rs.'+fee+' = Rs.'+(pubEvents.length*fee)+'/-';if(document.getElementById('eFeePer'))document.getElementById('eFeePer').innerText=fee;if(document.getElementById('eFeeCount'))document.getElementById('eFeeCount').innerText=selEvents.length;if(document.getElementById('eFeeTotal'))document.getElementById('eFeeTotal').innerText=selEvents.length*fee;}
 function uploadPayProof(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=function(ev){tempPayProof=ev.target.result;document.getElementById('pPayPreview').innerText='✅ Payment Screenshot Uploaded: '+f.name;};r.readAsDataURL(f);}
-function uploadBonafide(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=function(ev){tempBonafide=ev.target.result;document.getElementById('pBonaPreview').innerText='✅ Bonafide Certificate Uploaded: '+f.name;};r.readAsDataURL(f);}
+function uploadBonafide(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=function(ev){tempBonafide=ev.target.result;document.getElementById('pBonaPreview').innerText='✅ Bonafide Uploaded: '+f.name;};r.readAsDataURL(f);}
 function viewImg(data){document.getElementById('modalImg').src=data;document.getElementById('imgModal').classList.remove('hidden');}
 function ageSettings(){let s=JSON.parse(localStorage.getItem('tn_age_settings')||'null');if(s)return s;return{cutoff:'2026-12-31',ranges:{'Under 14':{from:'2013-01-01',to:'2014-12-31'},'Under 16':{from:'2011-01-01',to:'2012-12-31'},'Under 18':{from:'2009-01-01',to:'2010-12-31'},'Under 20':{from:'2007-01-01',to:'2008-12-31'},'Open':{from:'1900-01-01',to:'2006-12-31'}} };}
-function saveAgeSettings(){let obj={cutoff:document.getElementById('adminCutoff').value,ranges:{'Under 14':{from:document.getElementById('u14From').value,to:document.getElementById('u14To').value},'Under 16':{from:document.getElementById('u16From').value,to:document.getElementById('u16To').value},'Under 18':{from:document.getElementById('u18From').value,to:document.getElementById('u18To').value},'Under 20':{from:document.getElementById('u20From').value,to:document.getElementById('u20To').value},'Open':{from:document.getElementById('openFrom').value,to:document.getElementById('openTo').value}}};localStorage.setItem('tn_age_settings',JSON.stringify(obj));document.getElementById('ageSetMsg').innerText='✅ Saved!';alert('✅ Saved! Cut-off: '+obj.cutoff);}
+function saveAgeSettings(){let obj={cutoff:document.getElementById('adminCutoff').value,ranges:{'Under 14':{from:document.getElementById('u14From').value,to:document.getElementById('u14To').value},'Under 16':{from:document.getElementById('u16From').value,to:document.getElementById('u16To').value},'Under 18':{from:document.getElementById('u18From').value,to:document.getElementById('u18To').value},'Under 20':{from:document.getElementById('u20From').value,to:document.getElementById('u20To').value},'Open':{from:document.getElementById('openFrom').value,to:document.getElementById('openTo').value}}};localStorage.setItem('tn_age_settings',JSON.stringify(obj));document.getElementById('ageSetMsg').innerText='✅ Saved!';alert('✅ Saved!');}
 function loadAgeSettings(){let s=ageSettings();if(document.getElementById('adminCutoff'))document.getElementById('adminCutoff').value=s.cutoff;if(document.getElementById('u14From'))document.getElementById('u14From').value=s.ranges['Under 14'].from;if(document.getElementById('u14To'))document.getElementById('u14To').value=s.ranges['Under 14'].to;if(document.getElementById('u16From'))document.getElementById('u16From').value=s.ranges['Under 16'].from;if(document.getElementById('u16To'))document.getElementById('u16To').value=s.ranges['Under 16'].to;if(document.getElementById('u18From'))document.getElementById('u18From').value=s.ranges['Under 18'].from;if(document.getElementById('u18To'))document.getElementById('u18To').value=s.ranges['Under 18'].to;if(document.getElementById('u20From'))document.getElementById('u20From').value=s.ranges['Under 20'].from;if(document.getElementById('u20To'))document.getElementById('u20To').value=s.ranges['Under 20'].to;if(document.getElementById('openFrom'))document.getElementById('openFrom').value=s.ranges['Open'].from;if(document.getElementById('openTo'))document.getElementById('openTo').value=s.ranges['Open'].to;}
 function calcAgeGroup(dobStr){if(!dobStr)return '';let s=ageSettings();for(let g of ['Under 14','Under 16','Under 18','Under 20','Open']){let r=s.ranges[g];if(dobStr>=r.from&&dobStr<=r.to)return g;}let dob=new Date(dobStr);let cut=new Date(s.cutoff);let age=cut.getFullYear()-dob.getFullYear();let m=cut.getMonth()-dob.getMonth();if(m<0||(m==0&&cut.getDate()<dob.getDate()))age--;if(age<=14)return 'Under 14';if(age<=16)return 'Under 16';if(age<=18)return 'Under 18';if(age<=20)return 'Under 20';return 'Open';}
 function onDobChangePublic(){let dob=document.getElementById('pDob').value;let g=calcAgeGroup(dob);if(g){document.getElementById('pAge').value=g;document.getElementById('pMsg').innerText='✅ DOB: '+dob+' -> Age Group Auto: '+g;}}
 function onDobChangeStaff(){let dob=document.getElementById('eDob').value;let g=calcAgeGroup(dob);if(g){document.getElementById('eAge').value=g;document.getElementById('eMsg').innerText='✅ DOB: '+dob+' -> Age Group Auto: '+g;}}
-function downloadBulkTemplate(){let data=[['Name','Phone','District','DOB (YYYY-MM-DD)','Age Group (Auto)','Gender','Events (Comma - Ex: 100m, 200m)','School / Club','Meet','Payment UTR','Payment Mode','Fee Paid'],['Priya Sharma','9876543210','Chennai','2013-06-15','','Female','100m Freestyle, 50m Freestyle','DAV School','Swimming','UTR123456','GPay','200'],['Arjun Kumar','9876543211','Madurai','2011-03-10','','Male','100m, 200m','St Joseph School','Athletics','UTR123457','PhonePe','200']];let ws=XLSX.utils.aoa_to_sheet(data);ws['!cols']=[{wch:20},{wch:14},{wch:14},{wch:16},{wch:15},{wch:12},{wch:35},{wch:18},{wch:12},{wch:14},{wch:12},{wch:12}];let wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Bulk Entry');let ins=[['BULK ENTRY - HOW TO FILL?'],['Fee = No. of Events x Entry Fee (Default Rs.100 Per Event)'],['Relay: 4x25m Freestyle Relay, 4x50m Freestyle Relay, 4x25m Medley Relay, 4x50m Medley Relay, 4x25m Mixed Relay, 4x50m Mixed Relay']];let ws2=XLSX.utils.aoa_to_sheet(ins);ws2['!cols']=[{wch:110}];XLSX.utils.book_append_sheet(wb,ws2,'Instructions');XLSX.writeFile(wb,'TN_Meet_2026_Bulk_Entry_Template.xlsx');alert('📥 Template Downloaded!');}
+function downloadBulkTemplate(){let data=[['Name','Phone','District','DOB (YYYY-MM-DD)','Age Group (Auto)','Gender','Events','School / Club','Meet','Payment UTR','Payment Mode','Fee Paid'],['Priya Sharma','9876543210','Chennai','2013-06-15','','Female','100m Freestyle, 50m Freestyle','DAV School','Swimming','UTR123456','GPay','200']];let ws=XLSX.utils.aoa_to_sheet(data);ws['!cols']=[{wch:20},{wch:14},{wch:14},{wch:16},{wch:15},{wch:12},{wch:35},{wch:18},{wch:12},{wch:14},{wch:12},{wch:12}];let wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Bulk Entry');XLSX.writeFile(wb,'TN_Meet_2026_Bulk_Entry_Template.xlsx');alert('📥 Template Downloaded!');}
 function processBulkRows(rows,source,defaultMeet){let arr=get('tn_entries',[]);let added=0;rows.slice(1).forEach((r)=>{if(!r[0])return;let dob='';if(r[3]){if(typeof r[3]==='number'){let d=new Date((r[3]-25569)*86400*1000);dob=d.toISOString().slice(0,10);}else{dob=String(r[3]).trim();}}let age=(r[4]||'').toString().trim();if(!age&&dob)age=calcAgeGroup(dob);if(!age)age='Open';let meet=(r[8]||defaultMeet||'Athletics').toString().trim();if(meet.toLowerCase().includes('swim'))meet='Swimming';else if(meet.toLowerCase().includes('ath'))meet='Athletics';let evStr=String(r[6]||'');let evCount=evStr?evStr.split(',').length:0;let fee=evCount*feeSettings().fee;if(r[11])fee=parseInt(r[11])||fee;arr.push({meet:meet,name:String(r[0]).trim(),phone:String(r[1]||''),district:String(r[2]||''),dob:dob,age:age,gender:(r[5]||'Male').toString().trim(),event:evStr,school:String(r[7]||''),payId:String(r[9]||''),payMode:String(r[10]||''),fee:fee,payProof:'',bonafide:'',startTime:settings().commonStart,finishTime:'',source:source,time:new Date().toLocaleString()});added++;});set('tn_entries',arr);return added;}
 function uploadBulkEntry(e){let f=e.target.files[0];if(!f)return;let rd=new FileReader();rd.onload=function(ev){let wb=XLSX.read(ev.target.result,{type:'binary'});let ws=wb.Sheets[wb.SheetNames[0]];let rows=XLSX.utils.sheet_to_json(ws,{header:1});let meet=document.getElementById('eMeet')?document.getElementById('eMeet').value:'Athletics';let n=processBulkRows(rows,'STAFF-BULK',meet);alert('✅ Bulk Upload Success! '+n+' Entries Added!');renderAll();fillFilterEvents();};rd.readAsBinaryString(f);}
 function uploadBulkEntryPublic(e){let f=e.target.files[0];if(!f)return;let rd=new FileReader();rd.onload=function(ev){let wb=XLSX.read(ev.target.result,{type:'binary'});let ws=wb.Sheets[wb.SheetNames[0]];let rows=XLSX.utils.sheet_to_json(ws,{header:1});let meet=document.getElementById('pMeet')?document.getElementById('pMeet').value:'Athletics';let n=processBulkRows(rows,'PUBLIC-BULK',meet);document.getElementById('pMsg').innerText='✅ Bulk Upload Success! '+n+' Entries Added!';alert('✅ Bulk Upload Success! '+n+' Entries Added!');};rd.readAsBinaryString(f);}
-function showEntriesPage(){document.getElementById('loginBox').classList.add('hidden');document.getElementById('publicBox').classList.add('hidden');document.getElementById('mainBox').classList.add('hidden');document.getElementById('entriesBox').classList.remove('hidden');fillFilterEvents();renderPublicEntries();window.scrollTo(0,0);}
+function showEntriesPage(){document.getElementById('loginBox').classList.add('hidden');document.getElementById('publicBox').classList.add('hidden');document.getElementById('mainBox').classList.add('hidden');document.getElementById('entriesBox').classList.remove('hidden');fillFilterEvents();renderPublicEntries();syncFromCloud();window.scrollTo(0,0);}
 function showEntriesPageAdmin(){showEntriesPage();}
 function copyPublicLink(){let t=document.createElement('textarea');t.value='https://benjaymathews-sketch.github.io/blank-app/?public=1';document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();alert('Entry Link Copied ✅');}
 function copyEntriesLink(){let t=document.createElement('textarea');t.value='https://benjaymathews-sketch.github.io/blank-app/?entries=1';document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();alert('Entries Check Link Copied ✅');}
@@ -351,14 +314,14 @@ function shareWhatsApp(){let link='https://benjaymathews-sketch.github.io/blank-
 function fillFilterEvents(){let ge=getEvents();let all=[...ge.Athletics,...ge.Swimming];let sel=document.getElementById('fEvent');let curV=sel.value;sel.innerHTML='<option value="">All Events</option>';all.forEach(e=>{let o=document.createElement('option');o.text=e;o.value=e;sel.add(o);});sel.value=curV;let asel=document.getElementById('aFevent');if(asel){let cv=asel.value;asel.innerHTML='<option value="">All Events</option>';all.forEach(e=>{let o=document.createElement('option');o.text=e;o.value=e;asel.add(o);});asel.value=cv;}}
 function clearFilters(){document.getElementById('fSearch').value='';document.getElementById('fMeet').value='';document.getElementById('fAge').value='';document.getElementById('fGender').value='';document.getElementById('fEvent').value='';renderPublicEntries();}
 function renderPublicEntries(){let all=get('tn_entries',[]);let q=(document.getElementById('fSearch').value||'').toLowerCase();let meet=document.getElementById('fMeet').value;let age=document.getElementById('fAge').value;let gender=document.getElementById('fGender').value;let ev=document.getElementById('fEvent').value;let filt=all.filter(e=>{if(meet&&e.meet!=meet)return false;if(age&&e.age!=age)return false;if(gender&&e.gender!=gender)return false;if(ev&&!(e.event||'').includes(ev))return false;if(q&&!((e.name||'').toLowerCase().includes(q)||(e.district||'').toLowerCase().includes(q)||(e.school||'').toLowerCase().includes(q)))return false;return true;});document.getElementById('totalCount').innerText=all.length;let males=all.filter(e=>e.gender=='Male').length;let females=all.filter(e=>e.gender=='Female').length;let ath=all.filter(e=>e.meet=='Athletics').length;let swm=all.filter(e=>e.meet=='Swimming').length;document.getElementById('totalSub').innerText='👦 Male: '+males+' | 👧 Female: '+females+' | 🏃 Athletics: '+ath+' | 🏊 Swimming: '+swm;document.getElementById('filterMsg').innerText='Showing: '+filt.length+' / Total: '+all.length+' Entries';let h='';filt.forEach((e,i)=>{h+='<div class="card"><b>'+(i+1)+'. '+e.name+'</b> - '+e.meet+'<br>📍 '+(e.district||'')+' | '+(e.school||'')+'<br>🎂 DOB: '+(e.dob||'')+' | <b>'+(e.age||'')+'</b> | '+(e.gender||'')+'<br>🏅 Events: <b>'+(e.event||'')+'</b><br>💰 Fee: Rs.'+(e.fee||0)+'/- | 💳 '+(e.payMode||'')+' - '+(e.payId||'')+'</div>';});document.getElementById('entriesList').innerHTML=h||'<p style="text-align:center">No Entries Found</p>';}
-function initPublic(){let s=settings();let pm=document.getElementById('pMeet');pm.innerHTML='';let allowed=s.meetCtrl=='Both'?['Athletics','Swimming']:[s.meetCtrl];allowed.forEach(m=>{let o=document.createElement('option');o.text=m;pm.add(o);});fillPublicEvents();loadAgeSettings();loadFeeQR();updateFeeDisplay();}
+function initPublic(){let s=settings();let pm=document.getElementById('pMeet');pm.innerHTML='';let allowed=s.meetCtrl=='Both'?['Athletics','Swimming']:[s.meetCtrl];allowed.forEach(m=>{let o=document.createElement('option');o.text=m;pm.add(o);});fillPublicEvents();loadAgeSettings();loadFeeQR();updateFeeDisplay();syncFromCloud();}
 function fillPublicEvents(){renderPublicEventGrid();}
-function savePublicEntry(){let name=document.getElementById('pName').value.trim(),phone=document.getElementById('pPhone').value.trim(),dob=document.getElementById('pDob').value;let payId=document.getElementById('pPayId').value.trim();if(!name||!phone||!dob){alert('Please Enter Name + Phone + DOB');return;}if(!pubEvents.length){alert('Please Tick At Least One Event - Tick 2 or 3 Events At A Time!');return;}if(!payId){alert('Please Enter Payment UTR / Transaction ID - Pay Using QR Code First');return;}if(!tempPayProof){alert('Please Upload Payment Screenshot');return;}if(!tempBonafide){alert('Please Upload Bonafide Certificate');return;}let fee=pubEvents.length*feeSettings().fee;let selectedCopy=pubEvents.slice();let arr=get('tn_entries',[]);arr.push({meet:document.getElementById('pMeet').value,name:name,phone:phone,district:document.getElementById('pDistrict').value,dob:dob,age:document.getElementById('pAge').value,gender:document.getElementById('pGender').value,school:document.getElementById('pSchool').value,event:selectedCopy.join(', '),payId:payId,payMode:document.getElementById('pPayMode').value,fee:fee,payProof:tempPayProof,bonafide:tempBonafide,startTime:settings().commonStart,finishTime:'',source:'PUBLIC',time:new Date().toLocaleString()});set('tn_entries',arr);pubEvents=[];tempPayProof='';tempBonafide='';document.getElementById('pSelected').innerText='Selected: None (0/5)';document.getElementById('pPayPreview').innerText='';document.getElementById('pBonaPreview').innerText='';renderPublicEventGrid();updateFeeDisplay();document.getElementById('pMsg').innerText='✅ Entry Submitted! - '+name+' - '+selectedCopy.length+' Events - Fee Paid: Rs.'+fee+'/- - UTR: '+payId;document.getElementById('pName').value='';document.getElementById('pPhone').value='';document.getElementById('pPayId').value='';alert('✅ Entry Submitted!\n\nName: '+name+'\nEvents: '+selectedCopy.join(', ')+'\nFee Paid: Rs.'+fee+'/-');}
+function savePublicEntry(){let name=document.getElementById('pName').value.trim(),phone=document.getElementById('pPhone').value.trim(),dob=document.getElementById('pDob').value;let payId=document.getElementById('pPayId').value.trim();if(!name||!phone||!dob){alert('Please Enter Name + Phone + DOB');return;}if(!pubEvents.length){alert('Please Tick At Least One Event!');return;}if(!payId){alert('Please Enter Payment UTR');return;}if(!tempPayProof){alert('Please Upload Payment Screenshot');return;}if(!tempBonafide){alert('Please Upload Bonafide Certificate');return;}let fee=pubEvents.length*feeSettings().fee;let selectedCopy=pubEvents.slice();let entry={meet:document.getElementById('pMeet').value,name:name,phone:phone,district:document.getElementById('pDistrict').value,dob:dob,age:document.getElementById('pAge').value,gender:document.getElementById('pGender').value,school:document.getElementById('pSchool').value,event:selectedCopy.join(', '),payId:payId,payMode:document.getElementById('pPayMode').value,fee:fee,payProof:tempPayProof,bonafide:tempBonafide,startTime:settings().commonStart,finishTime:'',source:'PUBLIC',time:new Date().toLocaleString()};let arr=get('tn_entries',[]);arr.push(entry);set('tn_entries',arr);cloudPost({type:'entry',...entry});pubEvents=[];tempPayProof='';tempBonafide='';document.getElementById('pSelected').innerText='Selected: None (0/5)';document.getElementById('pPayPreview').innerText='';document.getElementById('pBonaPreview').innerText='';renderPublicEventGrid();updateFeeDisplay();document.getElementById('pMsg').innerText='✅ Entry Submitted! - '+name+' - Fee: Rs.'+fee+'/-';document.getElementById('pName').value='';document.getElementById('pPhone').value='';document.getElementById('pPayId').value='';alert('✅ Entry Submitted!\n\nName: '+name+'\nEvents: '+selectedCopy.join(', ')+'\nFee: Rs.'+fee+'/-');}
 function doLogin(){let id=document.getElementById('loginId').value.trim();let pw=document.getElementById('loginPass').value;let u=users().find(x=>x.uid==id&&x.pass==pw);if(!u){document.getElementById('loginErr').innerText='Wrong ID / Password';return;}cur=u;set('tn_cur',u);document.getElementById('loginBox').classList.add('hidden');document.getElementById('publicBox').classList.add('hidden');document.getElementById('entriesBox').classList.add('hidden');document.getElementById('mainBox').classList.remove('hidden');document.getElementById('who').innerText=u.uid;document.getElementById('whoRole').innerText=u.role+' - '+u.meet;show('adminPanel',u.role=='admin');show('entryPanel',u.role=='entry');show('officialPanel',u.role=='official');show('startPanel',u.role=='startref');show('finishPanel',u.role=='finishref');show('certPanel',true);if(u.role=='admin'){show('entryPanel',true);show('officialPanel',true);show('startPanel',true);show('finishPanel',true);}initPanels();startPolling();}
 function logout(){localStorage.removeItem('tn_cur');location.reload();}
-function initPanels(){let s=settings();let ct=certTpl();document.getElementById('offCommonStart').innerText=s.commonStart;document.getElementById('offLanes').innerText=s.lanes;document.getElementById('adminMeetCtrl').value=s.meetCtrl;document.getElementById('commonStart').value=s.commonStart;document.getElementById('laneCount').value=s.lanes;document.getElementById('certH1').value=ct.h1;document.getElementById('certH2').value=ct.h2;document.getElementById('certH3').value=ct.h3;document.getElementById('certTitle').value=ct.title;document.getElementById('certSub').value=ct.sub;document.getElementById('certF1').value=ct.f1;document.getElementById('certF2').value=ct.f2;document.getElementById('certS1').value=ct.s1;document.getElementById('certS2').value=ct.s2;document.getElementById('certS3').value=ct.s3;document.getElementById('certBg').value=ct.bg;document.getElementById('logoPreview').innerHTML=ct.logo?'<img src="'+ct.logo+'" style="width:90px">':'<p>No Logo Yet</p>';let em=document.getElementById('eMeet');em.innerHTML='';let allowed=[];if(cur.meet=='Both'||cur.role=='admin'){allowed=s.meetCtrl=='Both'?['Athletics','Swimming']:[s.meetCtrl];}else{allowed=(s.meetCtrl=='Both'||s.meetCtrl==cur.meet)?[cur.meet]:[s.meetCtrl];}allowed.forEach(m=>{let o=document.createElement('option');o.text=m;em.add(o);});document.getElementById('entryMeetInfo').innerText=allowed.join(', ');fillEvents();renderAll();renderOrder();renderOfficial();renderStartFinish();renderLiveEventList();renderEventLists();loadAgeSettings();fillFilterEvents();loadFeeQR();updateFeeDisplay();}
+function initPanels(){let s=settings();let ct=certTpl();document.getElementById('offCommonStart').innerText=s.commonStart;document.getElementById('offLanes').innerText=s.lanes;document.getElementById('adminMeetCtrl').value=s.meetCtrl;document.getElementById('commonStart').value=s.commonStart;document.getElementById('laneCount').value=s.lanes;document.getElementById('certH1').value=ct.h1;document.getElementById('certH2').value=ct.h2;document.getElementById('certH3').value=ct.h3;document.getElementById('certTitle').value=ct.title;document.getElementById('certSub').value=ct.sub;document.getElementById('certF1').value=ct.f1;document.getElementById('certF2').value=ct.f2;document.getElementById('certS1').value=ct.s1;document.getElementById('certS2').value=ct.s2;document.getElementById('certS3').value=ct.s3;document.getElementById('certBg').value=ct.bg;document.getElementById('logoPreview').innerHTML=ct.logo?'<img src="'+ct.logo+'" style="width:90px">':'<p>No Logo Yet</p>';let em=document.getElementById('eMeet');em.innerHTML='';let allowed=[];if(cur.meet=='Both'||cur.role=='admin'){allowed=s.meetCtrl=='Both'?['Athletics','Swimming']:[s.meetCtrl];}else{allowed=(s.meetCtrl=='Both'||s.meetCtrl==cur.meet)?[cur.meet]:[s.meetCtrl];}allowed.forEach(m=>{let o=document.createElement('option');o.text=m;em.add(o);});document.getElementById('entryMeetInfo').innerText=allowed.join(', ');fillEvents();renderAll();renderOrder();renderOfficial();renderStartFinish();renderLiveEventList();renderEventLists();loadAgeSettings();fillFilterEvents();loadFeeQR();updateFeeDisplay();syncFromCloud();}
 function fillEvents(){renderStaffEventGrid();let sch=document.getElementById('schEvent');if(sch){sch.innerHTML='';let ge=getEvents();[...ge.Athletics.map(x=>x+' - Athletics'),...ge.Swimming.map(x=>x+' - Swimming')].forEach(e=>{let o=document.createElement('option');o.text=e;sch.add(o);});}}
-function saveEntry(){let meet=document.getElementById('eMeet').value,name=document.getElementById('eName').value,dob=document.getElementById('eDob').value;if(!name||!dob){alert('Please Enter Name + DOB');return;}if(!selEvents.length){alert('Please Tick At Least One Event');return;}let fee=selEvents.length*feeSettings().fee;let arr=get('tn_entries',[]);arr.push({meet:meet,name:name,phone:document.getElementById('ePhone').value,district:document.getElementById('eDistrict').value,dob:dob,age:document.getElementById('eAge').value,gender:document.getElementById('eGender').value,event:selEvents.join(', '),payId:document.getElementById('ePayId').value||'',payMode:document.getElementById('ePayMode').value||'',fee:fee,payProof:'',bonafide:'',startTime:settings().commonStart,finishTime:'',source:'STAFF',time:new Date().toLocaleString()});set('tn_entries',arr);selEvents=[];renderStaffEventGrid();updateFeeDisplay();document.getElementById('eMsg').innerText='Entry Saved ✅ - '+name+' - Fee: Rs.'+fee+'/-';renderAll();}
+function saveEntry(){let meet=document.getElementById('eMeet').value,name=document.getElementById('eName').value,dob=document.getElementById('eDob').value;if(!name||!dob){alert('Please Enter Name + DOB');return;}if(!selEvents.length){alert('Please Tick At Least One Event');return;}let fee=selEvents.length*feeSettings().fee;let entry={meet:meet,name:name,phone:document.getElementById('ePhone').value,district:document.getElementById('eDistrict').value,dob:dob,age:document.getElementById('eAge').value,gender:document.getElementById('eGender').value,event:selEvents.join(', '),payId:document.getElementById('ePayId').value||'',payMode:document.getElementById('ePayMode').value||'',fee:fee,payProof:'',bonafide:'',startTime:settings().commonStart,finishTime:'',source:'STAFF',time:new Date().toLocaleString()};let arr=get('tn_entries',[]);arr.push(entry);set('tn_entries',arr);cloudPost({type:'entry',...entry});selEvents=[];renderStaffEventGrid();updateFeeDisplay();document.getElementById('eMsg').innerText='Entry Saved ✅ - '+name+' - Fee: Rs.'+fee+'/-';renderAll();}
 function saveAdminSettings(){set('tn_settings',{meetCtrl:document.getElementById('adminMeetCtrl').value,commonStart:document.getElementById('commonStart').value,lanes:document.getElementById('laneCount').value});document.getElementById('adminSetMsg').innerText='Saved ✅';initPanels();}
 function createUser(){let uid=document.getElementById('newUid').value.trim(),pw=document.getElementById('newUpass').value;if(!uid||!pw){alert('Please Enter ID + Password');return;}let arr=users();if(arr.find(x=>x.uid==uid)){alert('User Already Exists');return;}arr.push({uid:uid,pass:pw,role:document.getElementById('newRole').value,meet:document.getElementById('newMeet').value});set('tn_users',arr);alert('User Created ✅ ID: '+uid);document.getElementById('newUid').value='';document.getElementById('newUpass').value='';renderAll();}
 function addNewEvent(){let meet=document.getElementById('newEventMeet').value;let name=document.getElementById('newEventName').value.trim();if(!name){alert('Please Enter Event Name');return;}let ev=getEvents();if(ev[meet].includes(name)){alert('Event Already Exists');return;}ev[meet].push(name);localStorage.setItem('tn_events',JSON.stringify(ev));document.getElementById('newEventName').value='';alert('✅ Event Added! '+name);renderEventLists();fillEvents();renderLiveEventList();}
@@ -369,7 +332,7 @@ function uploadLogo(e){let f=e.target.files[0];if(!f)return;let r=new FileReader
 function saveCertTemplate(){let ct=certTpl();ct.h1=document.getElementById('certH1').value;ct.h2=document.getElementById('certH2').value;ct.h3=document.getElementById('certH3').value;ct.title=document.getElementById('certTitle').value;ct.sub=document.getElementById('certSub').value;ct.f1=document.getElementById('certF1').value;ct.f2=document.getElementById('certF2').value;ct.s1=document.getElementById('certS1').value;ct.s2=document.getElementById('certS2').value;ct.s3=document.getElementById('certS3').value;ct.bg=document.getElementById('certBg').value;set('tn_cert',ct);document.getElementById('certSaveMsg').innerText='Certificate Saved ✅';}
 function previewCert(){showCert('Demo Player - Priya','100m Freestyle','01:12.45','1st Place 🥇','Female','Chennai');}
 function showCert(name,event,time,place,gender,district){let ct=certTpl();document.getElementById('printCert').style.background=ct.bg;document.getElementById('pH1').innerText=ct.h1;document.getElementById('pH2').innerText=ct.h2;document.getElementById('pH3').innerText=ct.h3;document.getElementById('pTitle').innerText=ct.title;document.getElementById('pSub').innerText=ct.sub;document.getElementById('pF1').innerText=ct.f1;document.getElementById('pF2').innerText=ct.f2;document.getElementById('pS1').innerText=ct.s1;document.getElementById('pS2').innerText=ct.s2;document.getElementById('pS3').innerText=ct.s3;let logo=document.getElementById('cLogo');if(ct.logo){logo.src=ct.logo;logo.style.display='block';}else{logo.style.display='none';}document.getElementById('cName').innerText=name;document.getElementById('cEvent').innerText=event;document.getElementById('cTime').innerText=time;document.getElementById('cPlace').innerText=place;document.getElementById('cGender').innerText=gender||'-';document.getElementById('cDistrict').innerText=district||'-';document.getElementById('printCert').classList.remove('hidden');window.scrollTo(0,document.getElementById('printCert').offsetTop);}
-function renderAll(){let arr=get('tn_entries',[]);document.getElementById('adminTotal').innerText=arr.length;let totalFee=arr.reduce((s,e)=>s+(parseInt(e.fee)||0),0);document.getElementById('adminTotalFee').innerText=totalFee;let males=arr.filter(e=>e.gender=='Male').length;let females=arr.filter(e=>e.gender=='Female').length;document.getElementById('adminTotalBreak').innerText='Male: '+males+' | Female: '+females+' | Athletics: '+arr.filter(e=>e.meet=='Athletics').length+' | Swimming: '+arr.filter(e=>e.meet=='Swimming').length;let uHtml='';users().forEach((u,i)=>{uHtml+='<div class="card"><b>'+u.uid+'</b> - '+u.role+' - '+u.meet+' - Password: <b>••••••••</b> '+(u.uid!='admin'?'<button style="background:#dc2626" onclick="delUser('+i+')">Delete</button>':'')+'</div>';});document.getElementById('userList').innerHTML=uHtml;let fAge=document.getElementById('aFage').value||'';let fGender=document.getElementById('aFgender').value||'';let fEvent=document.getElementById('aFevent').value||'';let filt=arr.filter(e=>{if(fAge&&e.age!=fAge)return false;if(fGender&&e.gender!=fGender)return false;if(fEvent&&!(e.event||'').includes(fEvent))return false;return true;});let h='';filt.forEach((e,i)=>{h+='<div class="card"><b>'+(i+1)+'. '+e.name+'</b> ('+e.meet+') - '+e.event+' - '+e.gender+' - Age: '+(e.age||'')+' - 📍 '+(e.district||'')+'<br>💰 Fee: <b>Rs.'+(e.fee||0)+'/-</b> | 💳 '+(e.payMode||'')+' - '+(e.payId||'No UTR')+'<br>'+(e.payProof?'<button style="background:#16a34a" onclick="viewImgByIndex('+i+',\'pay\')">👁️ View Payment Screenshot</button>':'<span style="color:red">No Payment Screenshot</span>')+' '+(e.bonafide?'<button style="background:#b45309" onclick="viewImgByIndex('+i+',\'bona\')">📄 View Bonafide</button>':'<span style="color:red">No Bonafide</span>')+' <button style="background:#dc2626" onclick="delEntry('+i+')">Delete</button></div>';});document.getElementById('adminEntries').innerHTML='<p><b>Showing: '+filt.length+' / Total: '+arr.length+' | Total Fee: Rs.'+totalFee+'/-</b></p>'+(h||'<p>No Entries</p>');document.getElementById('myEntries').innerHTML=h||'<p>No Entries</p>';}
+function renderAll(){let arr=get('tn_entries',[]);document.getElementById('adminTotal').innerText=arr.length;let totalFee=arr.reduce((s,e)=>s+(parseInt(e.fee)||0),0);document.getElementById('adminTotalFee').innerText=totalFee;let males=arr.filter(e=>e.gender=='Male').length;let females=arr.filter(e=>e.gender=='Female').length;document.getElementById('adminTotalBreak').innerText='Male: '+males+' | Female: '+females+' | Athletics: '+arr.filter(e=>e.meet=='Athletics').length+' | Swimming: '+arr.filter(e=>e.meet=='Swimming').length;let uHtml='';users().forEach((u,i)=>{uHtml+='<div class="card"><b>'+u.uid+'</b> - '+u.role+' - '+u.meet+' <button style="background:#dc2626" onclick="delUser('+i+')">Delete</button></div>';});document.getElementById('userList').innerHTML=uHtml;let fAge=document.getElementById('aFage').value||'';let fGender=document.getElementById('aFgender').value||'';let fEvent=document.getElementById('aFevent').value||'';let filt=arr.filter(e=>{if(fAge&&e.age!=fAge)return false;if(fGender&&e.gender!=fGender)return false;if(fEvent&&!(e.event||'').includes(fEvent))return false;return true;});let h='';filt.forEach((e,i)=>{h+='<div class="card"><b>'+(i+1)+'. '+e.name+'</b> ('+e.meet+') - '+e.event+' - '+e.gender+' - Age: '+(e.age||'')+' - 📍 '+(e.district||'')+'<br>💰 Fee: <b>Rs.'+(e.fee||0)+'/-</b> | 💳 '+(e.payMode||'')+' - '+(e.payId||'No UTR')+'<br>'+(e.payProof?'<button style="background:#16a34a" onclick="viewImgByIndex('+i+',\'pay\')">👁️ View Payment</button>':'<span style="color:red">No Payment Screenshot</span>')+' '+(e.bonafide?'<button style="background:#b45309" onclick="viewImgByIndex('+i+',\'bona\')">📄 View Bonafide</button>':'<span style="color:red">No Bonafide</span>')+' <button style="background:#dc2626" onclick="delEntry('+i+')">Delete</button></div>';});document.getElementById('adminEntries').innerHTML='<p><b>Showing: '+filt.length+' / Total: '+arr.length+' | Total Fee: Rs.'+totalFee+'/-</b></p>'+(h||'<p>No Entries</p>');document.getElementById('myEntries').innerHTML=h||'<p>No Entries</p>';}
 function viewImgByIndex(i,type){let a=get('tn_entries',[]);let e=a[i];let d=type=='pay'?e.payProof:e.bonafide;if(d)viewImg(d);else alert('No File');}
 function delUser(i){if(confirm('Delete?')){let a=users();a.splice(i,1);set('tn_users',a);renderAll();}}
 function delEntry(i){let a=get('tn_entries',[]);if(confirm('Delete '+a[i].name+'?')){a.splice(i,1);set('tn_entries',a);renderAll();}}
@@ -390,7 +353,8 @@ function adminTestReset(){localStorage.removeItem('tn_live_race');document.getEl
 function uploadOrderExcel(e){let f=e.target.files[0];if(!f)return;let rd=new FileReader();rd.onload=function(ev){let wb=XLSX.read(ev.target.result,{type:'binary'});let ws=wb.Sheets[wb.SheetNames[0]];let rows=XLSX.utils.sheet_to_json(ws,{header:1});let ord=rows.slice(1).map(r=>({event:r[0]||'',name:r[1]||'',lane:r[2]||'',time:r[3]||''}));set('tn_order',ord);alert('Order Uploaded ✅');renderOrder();};rd.readAsBinaryString(f);}
 function uploadOrderPdf(e){let f=e.target.files[0];if(!f)return;let ord=get('tn_order',[]);ord.push({event:'PDF - '+f.name,name:'Please Open PDF',lane:''});set('tn_order',ord);alert('PDF Uploaded ✅');renderOrder();}
 setLang(localStorage.getItem('tn_lang')||'en');
-if(window.location.search.includes('entries')){document.getElementById('loginBox').classList.add('hidden');document.getElementById('entriesBox').classList.remove('hidden');fillFilterEvents();renderPublicEntries();}
+updateCloudStatus();
+if(window.location.search.includes('entries')){document.getElementById('loginBox').classList.add('hidden');document.getElementById('entriesBox').classList.remove('hidden');fillFilterEvents();renderPublicEntries();syncFromCloud();}
 else if(window.location.search.includes('public')){document.getElementById('loginBox').classList.add('hidden');document.getElementById('publicBox').classList.remove('hidden');initPublic();}
 </script>
 </body>
