@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TN State Meet 2026 - Cloud Sync</title>
+<title>TN State Meet 2026 - QR URL Fix</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 body{font-family:Arial;background:#eef2ff;padding:15px;margin:0}
@@ -44,7 +44,7 @@ label{font-size:12px;font-weight:bold}
 <label>🔍 Search - Name / District / School</label><input id="fSearch" placeholder="Ex: Priya, Chennai" oninput="renderPublicEntries()">
 <div style="display:flex;gap:5px"><div style="flex:1"><label>Meet</label><select id="fMeet" onchange="renderPublicEntries()"><option value="">All Meet</option><option>Athletics</option><option>Swimming</option></select></div><div style="flex:1"><label>Age Group</label><select id="fAge" onchange="renderPublicEntries()"><option value="">All Age Group</option><option>Under 14</option><option>Under 16</option><option>Under 18</option><option>Under 20</option><option>Open</option></select></div></div>
 <div style="display:flex;gap:5px"><div style="flex:1"><label>Gender</label><select id="fGender" onchange="renderPublicEntries()"><option value="">All Gender</option><option>Male</option><option>Female</option></select></div><div style="flex:1"><label>Event</label><select id="fEvent" onchange="renderPublicEntries()"><option value="">All Events</option></select></div></div>
-<button style="background:#64748b;width:100%" onclick="clearFilters()">🔄 Clear All Filters</button><button style="background:#16a34a;width:100%" onclick="syncFromCloud()">☁️ Refresh From Cloud</button><p id="filterMsg" style="text-align:center;font-weight:bold;color:#0b5cff"></p>
+<button style="background:#64748b;width:100%" onclick="clearFilters()">🔄 Clear All Filters</button><button style="background:#16a34a;width:100%" onclick="syncFromCloud()">☁️ Refresh From Cloud</button><button style="background:#0284c7;width:100%" onclick="testCloud()">🔍 Test Cloud - Enna Data Irukku?</button><p id="filterMsg" style="text-align:center;font-weight:bold;color:#0b5cff"></p>
 </div>
 <div id="entriesList"></div>
 <button style="background:#0b5cff;width:100%" onclick="location.href=location.origin+location.pathname+'?public=1'">📝 Click Here to Submit New Entry</button>
@@ -70,7 +70,6 @@ label{font-size:12px;font-weight:bold}
 <label>Gender</label><select id="pGender"><option>Male</option><option>Female</option></select>
 <label>School / Club</label><input id="pSchool" placeholder="School / Club Name">
 <label style="font-size:14px;color:#0b5cff">🏅 SELECT EVENTS - Tick 2 or 3 Events At A Time! (Max 5)</label>
-<p style="font-size:12px;color:#64748b;margin:2px">👆 Tick the Boxes Below - You Can Select 2, 3, or Up to 5 Events Together!</p>
 <div id="pEventGrid" class="evGrid"></div>
 <p id="pSelected" style="font-weight:bold;color:#16a34a">Selected: None (0/5)</p>
 <button style="background:#64748b" onclick="clearPublicEvents()">🔄 Clear All Events</button>
@@ -106,24 +105,30 @@ label{font-size:12px;font-weight:bold}
 <button style="background:#7c3aed;width:100%" onclick="copyEntriesLink()">📋 Copy Entries Check Link</button>
 <button style="background:#25D366;width:100%" onclick="shareWhatsApp()">💬 Share on WhatsApp</button>
 </div>
-<!-- CLOUD SETTINGS -->
 <div style="background:#e0f2fe;padding:14px;border-radius:10px;margin-top:12px">
-<h3>☁️ Cloud Sync - IMPORTANT - Admin Phone la Maathina Vera Phone-layum Theriyanumna Idhu Venum!</h3>
-<label>☁️ Google Apps Script Web App URL - Paste Here (One Time Only)</label><input id="adminCloudUrl" placeholder="https://script.google.com/macros/s/XXXX/exec">
+<h3>☁️ Cloud Sync - Connected ✅</h3>
+<p style="font-size:12px;color:green">✅ Cloud URL Already Inside Code</p>
+<label>☁️ Cloud URL (If Change)</label><input id="adminCloudUrl">
 <button style="background:#0284c7;width:100%" onclick="saveCloudUrl()">✅ Save Cloud URL</button>
-<p style="font-size:12px">Cloud URL Illana - Data Local Mattum Dhan - Vera Phone la Theriyadhu! Cloud URL Pottadhum Ella Phone-layum Same Data Varum!</p>
 <button style="background:#16a34a;width:100%" onclick="syncFromCloud()">☁️ Sync Now From Cloud</button>
-<button style="background:#7c3aed;width:100%" onclick="exportAllData()">📥 Export All Data - Backup File Download</button>
+<button style="background:#0284c7;width:100%" onclick="testCloud()">🔍 Test Cloud - Enna Data Irukku?</button>
+<button style="background:#7c3aed;width:100%" onclick="exportAllData()">📥 Export All Data - Backup</button>
 <label>📤 Import Backup File</label><input type="file" accept=".json" onchange="importAllData(event)">
 <p id="cloudSaveMsg" style="color:green;text-align:center"></p>
 </div>
 <div style="background:#fef3c7;padding:14px;border-radius:10px;margin-top:12px">
-<h3>💰 Entry Fee + QR Code - Admin Can Change Any Time</h3>
-<label>💰 Entry Fee - Per Event (Rs.) - Default Rs.100</label><input id="adminFee" type="number" value="100" min="0">
-<label>📱 Upload QR Code - Change Any Time</label><input type="file" accept="image/*" onchange="uploadQR(event)"><div id="qrPreview"></div>
+<h3>💰 Entry Fee + QR Code - BEST WAY: QR LINK USE PANNUNGA!</h3>
+<label>💰 Entry Fee - Per Event (Rs.)</label><input id="adminFee" type="number" value="100" min="0">
+<p style="font-size:12px;color:#dc2626">⚠️ Fee Maathi Save Panna - Public Phone la Refresh Panna Pudhu Fee Varum. Fee Maaralana - Settings Sheet Illanu Artham - Sheet la Settings Sheet Create Pannunga!</p>
+<label>📱 QR Code - OPTION 1 (BEST ✅): QR Image Link - Google Drive Link Paste Pannunga</label>
+<input id="adminQrUrl" placeholder="https://drive.google.com/uc?export=view&id=XXXX  OR  https://i.ibb.co/xxxx/qr.png">
+<p style="font-size:11px;color:#64748b">Drive Link: Share > Anyone > Copy Link > /d/XXXX/ la Irukkura ID-a Eduthu https://drive.google.com/uc?export=view&id=XXXX nu Podunga</p>
+<label>📱 QR Code - OPTION 2: QR Photo Upload (Small Photo Mattum! Auto Compress Aagum)</label><input type="file" accept="image/*" onchange="uploadQR(event)"><div id="qrPreview"></div>
 <label>UPI ID / Payee Name</label><input id="adminUpi" placeholder="Ex: tnmeet@okaxis">
 <button style="background:#d97706;width:100%" onclick="saveFeeQR()">✅ Save Entry Fee + QR Code - To Cloud + Local</button>
 <p id="feeSaveMsg" style="color:green;text-align:center"></p>
+<button style="background:#dc2626;width:100%" onclick="forcePushFeeQR()">🚀 FORCE PUSH - Fee + QR-a Cloud-kku Thallunga</button>
+<p style="font-size:11px">Fee / QR Maaralana - Idha Press Pannunga - 2 Vaati Anupppum!</p>
 </div>
 <div style="background:#e0e7ff;padding:12px;border-radius:10px;margin-top:10px"><b>📊 TOTAL ENTRIES:</b> <b id="adminTotal" style="font-size:22px;color:#0b5cff">0</b> | <b>💰 Total: Rs. <span id="adminTotalFee">0</span>/-</b><br><span id="adminTotalBreak"></span><br><button style="background:#7c3aed;width:100%" onclick="showEntriesPageAdmin()">📋 View Entries</button></div>
 <h3>📅 Age Group - Cut-off + Custom Range</h3>
@@ -216,12 +221,8 @@ label{font-size:12px;font-weight:bold}
 <div id="imgModal" class="hidden" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:999;text-align:center;padding:20px;box-sizing:border-box"><img id="modalImg" src="" style="max-width:95%;max-height:80%;margin-top:20px;border-radius:10px;background:#fff"><br><button style="background:#dc2626;margin-top:10px" onclick="document.getElementById('imgModal').classList.add('hidden')">✖ Close</button></div>
 
 <script>
-// ===== ⚠️ STEP 3: INGA UNGA GOOGLE APPS SCRIPT URL-A PASTE PANNUNGA =====
-// Example: let CLOUD_URL = "https://script.google.com/macros/s/ABC123/exec";
-let CLOUD_URL = ""; 
-// Admin Panel la URL Type Panna Kooda Idhu Auto Fill Aagum - LocalStorage la Save Aagum
-if(localStorage.getItem('tn_cloud_url')) CLOUD_URL = localStorage.getItem('tn_cloud_url');
-
+let CLOUD_URL = "https://script.google.com/macros/s/AKfycbxLVyUch9tchNwn7PfYs3chHuKfvRw-UM-skj09pQS0QNfmKidr_8k6jd_Io1zTzYmpRg/exec";
+if(localStorage.getItem('tn_cloud_url') && localStorage.getItem('tn_cloud_url').length>10) CLOUD_URL = localStorage.getItem('tn_cloud_url');
 let cur=null, selEvents=[], pubEvents=[], curLang='en', tempPayProof='', tempBonafide='', tempQR='';
 function setLang(l){curLang=l;localStorage.setItem('tn_lang',l);document.getElementById('langShow').innerText = l=='ta' ? ' | Current: தமிழ்' : ' | Current: English';document.querySelectorAll('[data-en]').forEach(el=>{el.innerText = l=='ta' ? (el.getAttribute('data-ta')||el.getAttribute('data-en')) : el.getAttribute('data-en');});}
 function get(k,d){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d));}catch(e){return d;}}
@@ -232,67 +233,99 @@ function certTpl(){return get('tn_cert',{h1:'TAMIL NADU STATE MEET 2026',h2:'Tam
 function getEvents(){let s=JSON.parse(localStorage.getItem('tn_events')||'null');if(s)return s;return{Athletics:["100m","200m","400m","800m","1500m","Long Jump","High Jump","Shot Put","Discus Throw","Javelin Throw"],Swimming:["50m Freestyle","100m Freestyle","200m Freestyle","50m Backstroke","100m Backstroke","50m Breaststroke","100m Breaststroke","50m Butterfly","100m Butterfly","200m Individual Medley","4x25m Freestyle Relay","4x50m Freestyle Relay","4x25m Medley Relay","4x50m Medley Relay","4x25m Mixed Relay","4x50m Mixed Relay"]};}
 function show(id,yes){document.getElementById(id).classList.toggle('hidden',!yes);}
 function fmt(ms){if(ms<0)ms=0;let m=Math.floor(ms/60000);let s=Math.floor((ms%60000)/1000);let cs=Math.floor((ms%1000)/10);return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+'.'+String(cs).padStart(2,'0');}
-
-// ===== CLOUD SYNC - GOOGLE SHEET =====
-function saveCloudUrl(){let u=document.getElementById('adminCloudUrl').value.trim();if(!u){alert('Please Paste Cloud URL');return;}CLOUD_URL=u;localStorage.setItem('tn_cloud_url',u);document.getElementById('cloudSaveMsg').innerText='✅ Cloud URL Saved! Ippo Ella Phone-layum Same Data Varum!';alert('✅ Cloud URL Saved! Now Sync From Cloud');syncFromCloud();}
-function updateCloudStatus(){let msg=CLOUD_URL?'☁️ Cloud Connected - Data Will Sync To All Phones':'⚠️ Cloud NOT Connected - Data Only On This Phone - Admin Panel la Cloud URL Podunga';let a=document.getElementById('cloudStatus');if(a)a.innerText=msg;let b=document.getElementById('cloudStatus2');if(b)b.innerText=msg;}
-async function syncFromCloud(){
-  updateCloudStatus();
-  if(!CLOUD_URL){return;}
+function saveCloudUrl(){let u=document.getElementById('adminCloudUrl').value.trim();if(!u){alert('Please Paste Cloud URL');return;}CLOUD_URL=u;localStorage.setItem('tn_cloud_url',u);alert('✅ Cloud URL Saved!');syncFromCloud();}
+function updateCloudStatus(){let msg=CLOUD_URL?'☁️ Cloud Connected ✅':'⚠️ Cloud NOT Connected';let a=document.getElementById('cloudStatus');if(a)a.innerText=msg;let b=document.getElementById('cloudStatus2');if(b)b.innerText=msg;}
+async function testCloud(){
   try{
     let r=await fetch(CLOUD_URL);
     let j=await r.json();
-    if(j.entries){ set('tn_entries', j.entries.map(e=>({...e, source:e.source||'CLOUD', time:e.time||''}))); }
-    if(j.settings){ set('tn_fee_qr',{fee:parseInt(j.settings.fee)||100, qr:j.settings.qr||'', upi:j.settings.upi||''}); }
+    let fee = j.settings ? j.settings.fee : 'NO SETTINGS SHEET!';
+    let qr = j.settings ? (j.settings.qr ? j.settings.qr.substring(0,80)+'... (Length: '+j.settings.qr.length+')' : 'NO QR IN CLOUD - EMPTY!') : 'NO SETTINGS';
+    let upi = j.settings ? j.settings.upi : '';
+    alert('☁️ CLOUD DATA NOW:\n\nFee in Cloud: '+fee+'\nQR in Cloud: '+qr+'\nUPI: '+upi+'\nEntries: '+(j.entries||[]).length+'\n\nFee 100 nu Irundha - Admin Save Pannala / Settings Sheet Illa!\nQR Empty nu Irundha - QR Photo Perusu - URL Use Pannunga!');
+  }catch(e){ alert('❌ Cloud Error!\n\n'+e.message+'\n\nDeploy > Anyone Pannitingala Check Pannunga!'); }
+}
+async function syncFromCloud(){
+  updateCloudStatus();
+  if(!CLOUD_URL) return;
+  try{
+    let r=await fetch(CLOUD_URL);
+    let j=await r.json();
+    if(j.entries && j.entries.length>0){ set('tn_entries', j.entries.map(e=>({...e, source:e.source||'CLOUD', time:e.time||''}))); }
+    // FIX: Cloud la Settings Illana Local-a Azhikka Vendaam!
+    if(j.settings && j.settings.fee){
+      let curFee = feeSettings();
+      let cloudQr = j.settings.qr || curFee.qr || '';
+      // Cloud QR Perusa Cut Aagirundha - Local QR-a Vachikko
+      if(cloudQr && cloudQr.length>100 && cloudQr.length<40000) curFee.qr = cloudQr;
+      else if(j.settings.qr && j.settings.qr.startsWith('http')) curFee.qr = j.settings.qr;
+      curFee.fee = parseInt(j.settings.fee)||curFee.fee;
+      curFee.upi = j.settings.upi || curFee.upi || '';
+      set('tn_fee_qr', curFee);
+    }
     loadFeeQR(); updateFeeDisplay(); renderPublicEntries(); if(document.getElementById('adminTotal')) renderAll();
-    let s=document.getElementById('cloudStatus'); if(s) s.innerText='☁️ Cloud Synced ✅ - '+ (j.entries||[]).length +' Entries';
-  }catch(e){ console.log('Cloud Sync Failed',e); }
+  }catch(e){ console.log(e); }
 }
 async function cloudPost(data){
   if(!CLOUD_URL) return;
+  // QR Perusa Irundha - Cut Panni Anuppa Vendaam - URL Mattum Anuppu
+  if(data.qr && data.qr.length>40000 && data.qr.startsWith('data:')){
+    alert('⚠️ QR Photo Rombo Perusu! Cloud la Pogadhu!\n\nDrive Link-a QR URL Box la Podunga!');
+    data.qr = '';
+  }
   try{ await fetch(CLOUD_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}); }catch(e){ console.log(e); }
 }
-function exportAllData(){
-  let data={entries:get('tn_entries',[]),fee_qr:feeSettings(),settings:settings(),events:getEvents(),exported:new Date().toLocaleString()};
-  let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='TN_Meet_Backup_'+new Date().toISOString().slice(0,10)+'.json'; a.click();
-  alert('✅ Backup Downloaded! Idha Vera Phone la Import Panna Mudiyum!');
+function forcePushFeeQR(){
+  let f=parseInt(document.getElementById('adminFee').value)||100;
+  let qrUrl=document.getElementById('adminQrUrl').value.trim();
+  let qr = qrUrl || tempQR || feeSettings().qr || '';
+  let obj={fee:f,qr:qr,upi:document.getElementById('adminUpi').value};
+  set('tn_fee_qr',obj);
+  cloudPost({type:'settings',fee:f,qr:qr,upi:obj.upi});
+  setTimeout(()=>cloudPost({type:'settings',fee:f,qr:qr,upi:obj.upi}),1500);
+  alert('🚀 FORCE PUSH Done! 2 Vaati Anuppiten!\n\nFee: '+f+'\nQR: '+(qr?qr.substring(0,60):'EMPTY')+'\n\n10 Sec Kazhichu Phone la Refresh Panni Paakavum!');
+  loadFeeQR();
 }
-function importAllData(e){
-  let f=e.target.files[0]; if(!f) return;
-  let r=new FileReader(); r.onload=function(ev){
-    try{
-      let d=JSON.parse(ev.target.result);
-      if(d.entries) set('tn_entries', d.entries);
-      if(d.fee_qr) set('tn_fee_qr', d.fee_qr);
-      if(d.settings) set('tn_settings', d.settings);
-      alert('✅ Import Done! '+(d.entries||[]).length+' Entries Restored!');
-      loadFeeQR(); renderAll(); renderPublicEntries();
-    }catch(err){ alert('Invalid Backup File'); }
-  }; r.readAsText(f);
-}
-
-// CHECKBOX EVENTS
+function exportAllData(){let data={entries:get('tn_entries',[]),fee_qr:feeSettings(),settings:settings(),events:getEvents()};let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='TN_Meet_Backup.json';a.click();}
+function importAllData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=function(ev){try{let d=JSON.parse(ev.target.result);if(d.entries)set('tn_entries',d.entries);if(d.fee_qr)set('tn_fee_qr',d.fee_qr);alert('✅ Import Done!');loadFeeQR();renderAll();}catch(err){alert('Invalid File');}};r.readAsText(f);}
 function renderPublicEventGrid(){let m=document.getElementById('pMeet').value;let arr=getEvents()[m]||[];let grid=document.getElementById('pEventGrid');let h='';arr.forEach((ev)=>{let checked=pubEvents.includes(ev)?'checked':'';let cls=pubEvents.includes(ev)?'evItem checked':'evItem';h+='<label class="'+cls+'"><input type="checkbox" '+checked+' onchange="togglePublicEvent2(\''+ev.replace(/'/g,"")+'\',this.checked)"> '+ev+'</label>';});grid.innerHTML=h||'<p>No Events</p>';}
-function togglePublicEvent2(ev,checked){if(checked){if(pubEvents.length>=5){alert('Max 5 Events Only!');renderPublicEventGrid();return;}if(!pubEvents.includes(ev))pubEvents.push(ev);}else{pubEvents=pubEvents.filter(x=>x!==ev);}document.getElementById('pSelected').innerText='Selected: '+(pubEvents.length?pubEvents.join(', '):'None')+' ('+pubEvents.length+'/5)';renderPublicEventGrid();updateFeeDisplay();}
+function togglePublicEvent2(ev,checked){if(checked){if(pubEvents.length>=5){alert('Max 5!');renderPublicEventGrid();return;}if(!pubEvents.includes(ev))pubEvents.push(ev);}else{pubEvents=pubEvents.filter(x=>x!==ev);}document.getElementById('pSelected').innerText='Selected: '+(pubEvents.length?pubEvents.join(', '):'None')+' ('+pubEvents.length+'/5)';renderPublicEventGrid();updateFeeDisplay();}
 function clearPublicEvents(){pubEvents=[];document.getElementById('pSelected').innerText='Selected: None (0/5)';renderPublicEventGrid();updateFeeDisplay();}
 function renderStaffEventGrid(){let m=document.getElementById('eMeet').value;let arr=getEvents()[m]||[];let grid=document.getElementById('eEventGrid');let h='';arr.forEach((ev)=>{let checked=selEvents.includes(ev)?'checked':'';let cls=selEvents.includes(ev)?'evItem checked':'evItem';h+='<label class="'+cls+'"><input type="checkbox" '+checked+' onchange="toggleStaffEvent2(\''+ev.replace(/'/g,"")+'\',this.checked)"> '+ev+'</label>';});grid.innerHTML=h||'<p>No Events</p>';}
-function toggleStaffEvent2(ev,checked){if(checked){if(selEvents.length>=5){alert('Max 5 Events Only!');renderStaffEventGrid();return;}if(!selEvents.includes(ev))selEvents.push(ev);}else{selEvents=selEvents.filter(x=>x!==ev);}document.getElementById('eSelected').innerText='Selected: '+(selEvents.length?selEvents.join(', '):'None')+' ('+selEvents.length+'/5)';renderStaffEventGrid();updateFeeDisplay();}
+function toggleStaffEvent2(ev,checked){if(checked){if(selEvents.length>=5){alert('Max 5!');renderStaffEventGrid();return;}if(!selEvents.includes(ev))selEvents.push(ev);}else{selEvents=selEvents.filter(x=>x!==ev);}document.getElementById('eSelected').innerText='Selected: '+(selEvents.length?selEvents.join(', '):'None')+' ('+selEvents.length+'/5)';renderStaffEventGrid();updateFeeDisplay();}
 function clearStaffEvents(){selEvents=[];document.getElementById('eSelected').innerText='Selected: None (0/5)';renderStaffEventGrid();updateFeeDisplay();}
 function feeSettings(){return get('tn_fee_qr',{fee:100,qr:'',upi:''});}
 function saveFeeQR(){
   let f=parseInt(document.getElementById('adminFee').value)||100;
-  let obj={fee:f,qr:tempQR||feeSettings().qr,upi:document.getElementById('adminUpi').value};
+  let qrUrl=document.getElementById('adminQrUrl').value.trim();
+  // QR URL Irundha Adhu Dhan Priority - Photo Illa!
+  let qr = qrUrl || tempQR || feeSettings().qr || '';
+  // Drive Link-a Direct View Link-a Maathu
+  if(qr.includes('drive.google.com/file/d/')){
+    let id=qr.split('/d/')[1].split('/')[0];
+    qr='https://drive.google.com/uc?export=view&id='+id;
+  }
+  let obj={fee:f,qr:qr,upi:document.getElementById('adminUpi').value};
   set('tn_fee_qr',obj);
-  // ☁️ Cloud-kkum Anuppu - Ella Phone-layum Maarum!
-  cloudPost({type:'settings',fee:f,qr:obj.qr,upi:obj.upi});
-  document.getElementById('feeSaveMsg').innerText='✅ Saved! Fee Rs.'+f+'/- + QR Saved To Cloud + Local!';
-  alert('✅ Saved To Cloud + Local!\nFee: Rs.'+f+'\nQR Updated!\n\nPublic Phone la Refresh Panna Pudhu QR Theriyum!');
+  cloudPost({type:'settings',fee:f,qr:qr,upi:obj.upi});
+  document.getElementById('feeSaveMsg').innerText='✅ Saved! Fee Rs.'+f+'/- + QR Saved!';
+  alert('✅ Saved To Cloud + Local!\nFee: Rs.'+f+'\nQR: '+(qr?qr.substring(0,60):'EMPTY')+'\n\nPhone la Refresh Panni Paakavum!');
   updateFeeDisplay(); loadFeeQR();
 }
-function loadFeeQR(){let s=feeSettings();if(document.getElementById('adminFee'))document.getElementById('adminFee').value=s.fee;if(document.getElementById('adminUpi'))document.getElementById('adminUpi').value=s.upi||'';if(document.getElementById('adminCloudUrl'))document.getElementById('adminCloudUrl').value=CLOUD_URL||'';if(document.getElementById('qrPreview'))document.getElementById('qrPreview').innerHTML=s.qr?'<img src="'+s.qr+'" style="width:180px;border:2px solid #16a34a;border-radius:10px"><p>✅ QR Saved</p>':'<p>No QR Yet</p>';if(document.getElementById('pQrWrap'))document.getElementById('pQrWrap').innerHTML=s.qr?'<img src="'+s.qr+'" style="width:220px;max-width:90%;border:3px solid #16a34a;border-radius:12px"><p style="font-weight:bold">'+(s.upi||'')+'</p>':'<p style="color:#64748b">QR Code Will Appear Here After Admin Uploads It</p>';updateFeeDisplay();updateCloudStatus();}
-function uploadQR(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=function(ev){tempQR=ev.target.result;document.getElementById('qrPreview').innerHTML='<img src="'+tempQR+'" style="width:180px;border:2px solid #16a34a;border-radius:10px"><p style="color:green">✅ QR Selected - Press Save Button</p>';};r.readAsDataURL(f);}
-function updateFeeDisplay(){let fee=feeSettings().fee;if(document.getElementById('pFeePer'))document.getElementById('pFeePer').innerText=fee;if(document.getElementById('pFeeCount'))document.getElementById('pFeeCount').innerText=pubEvents.length;if(document.getElementById('pFeeTotal'))document.getElementById('pFeeTotal').innerText=pubEvents.length*fee;if(document.getElementById('pFeeNote'))document.getElementById('pFeeNote').innerText=pubEvents.length==0?'Tick Events Above to See Total Fee':pubEvents.length+' Events x Rs.'+fee+' = Rs.'+(pubEvents.length*fee)+'/-';if(document.getElementById('eFeePer'))document.getElementById('eFeePer').innerText=fee;if(document.getElementById('eFeeCount'))document.getElementById('eFeeCount').innerText=selEvents.length;if(document.getElementById('eFeeTotal'))document.getElementById('eFeeTotal').innerText=selEvents.length*fee;}
+function loadFeeQR(){let s=feeSettings();if(document.getElementById('adminFee'))document.getElementById('adminFee').value=s.fee;if(document.getElementById('adminUpi'))document.getElementById('adminUpi').value=s.upi||'';if(document.getElementById('adminQrUrl'))document.getElementById('adminQrUrl').value=(s.qr&&s.qr.startsWith('http'))?s.qr:'';if(document.getElementById('adminCloudUrl'))document.getElementById('adminCloudUrl').value=CLOUD_URL||'';if(document.getElementById('qrPreview'))document.getElementById('qrPreview').innerHTML=s.qr?'<img src="'+s.qr+'" style="width:180px;border:2px solid #16a34a;border-radius:10px" onerror="this.parentNode.innerHTML=\'<p style=color:red>QR Link Work Aagala - Drive Share Anyone Pannitingala Check Pannunga!</p>\'"><p>✅ QR Saved - Length: '+s.qr.length+'</p>':'<p>No QR Yet</p>';if(document.getElementById('pQrWrap'))document.getElementById('pQrWrap').innerHTML=s.qr?'<img src="'+s.qr+'" style="width:220px;max-width:90%;border:3px solid #16a34a;border-radius:12px" onerror="this.parentNode.innerHTML=\'<p style=color:red>QR Load Aagala - Admin QR Link-a Check Pannunga</p>\'"><p style="font-weight:bold">'+(s.upi||'')+'</p>':'<p style="color:#64748b">QR Code Will Appear Here After Admin Uploads It</p>';updateFeeDisplay();updateCloudStatus();}
+function uploadQR(e){
+  let f=e.target.files[0];if(!f)return;
+  // COMPRESS QR - 300px ku Surukku - Sheet la Pogum Alavukku!
+  let img=new Image(); let url=URL.createObjectURL(f);
+  img.onload=function(){
+    let c=document.createElement('canvas'); let max=300; let w=img.width, h=img.height;
+    if(w>max){ h=h*max/w; w=max; }
+    c.width=w; c.height=h; let ctx=c.getContext('2d'); ctx.drawImage(img,0,0,w,h);
+    tempQR=c.toDataURL('image/jpeg',0.6);
+    document.getElementById('qrPreview').innerHTML='<img src="'+tempQR+'" style="width:180px;border:2px solid #16a34a;border-radius:10px"><p style="color:green">✅ QR Compressed - Size: '+tempQR.length+' - Save Button Press Pannunga</p>';
+  }; img.src=url;
+}
+function updateFeeDisplay(){let fee=feeSettings().fee;if(document.getElementById('pFeePer'))document.getElementById('pFeePer').innerText=fee;if(document.getElementById('pFeeCount'))document.getElementById('pFeeCount').innerText=pubEvents.length;if(document.getElementById('pFeeTotal'))document.getElementById('pFeeTotal').innerText=pubEvents.length*fee;if(document.getElementById('pFeeNote'))document.getElementById('pFeeNote').innerText=pubEvents.length==0?'Tick Events Above':pubEvents.length+' Events x Rs.'+fee+' = Rs.'+(pubEvents.length*fee)+'/-';if(document.getElementById('eFeePer'))document.getElementById('eFeePer').innerText=fee;if(document.getElementById('eFeeCount'))document.getElementById('eFeeCount').innerText=selEvents.length;if(document.getElementById('eFeeTotal'))document.getElementById('eFeeTotal').innerText=selEvents.length*fee;}
 function uploadPayProof(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=function(ev){tempPayProof=ev.target.result;document.getElementById('pPayPreview').innerText='✅ Payment Screenshot Uploaded: '+f.name;};r.readAsDataURL(f);}
 function uploadBonafide(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=function(ev){tempBonafide=ev.target.result;document.getElementById('pBonaPreview').innerText='✅ Bonafide Uploaded: '+f.name;};r.readAsDataURL(f);}
 function viewImg(data){document.getElementById('modalImg').src=data;document.getElementById('imgModal').classList.remove('hidden');}
